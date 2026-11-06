@@ -1,4 +1,10 @@
 {
+  "0.13.2": {
+    "en": "Updated the App Store artwork and added links to the community topic and source code.",
+    "fr": "Nouveau visuel sur la fiche de la boutique et ajout des liens vers le sujet du forum et le code source.",
+    "nl": "Nieuwe afbeelding in de App Store en links naar het forumonderwerp en de broncode.",
+    "de": "Neues Bild im App Store und Links zum Forumsthema und zum Quellcode."
+  },
   "0.13.1": {
     "en": "First community beta. Send photos from Homey Flows or the app, browse an authorized frame gallery, add photo widgets and check media counts.",
     "fr": "Première bêta communautaire. Envoyez des photos depuis l’app ou des Flows, consultez une galerie autorisée, ajoutez des widgets photo et vérifiez les compteurs de médias.",
