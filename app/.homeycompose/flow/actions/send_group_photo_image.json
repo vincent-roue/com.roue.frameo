@@ -1,0 +1,76 @@
+{
+  "title": {
+    "en": "Send an image tag to a group",
+    "fr": "Envoyer un tag image à un groupe",
+    "nl": "Een afbeeldingstag naar een groep verzenden",
+    "de": "Einen Bild-Tag an eine Gruppe senden"
+  },
+  "titleFormatted": {
+    "en": "Send [[droptoken]] to [[group]], framing [[scale]], caption [[caption]]",
+    "fr": "Envoyer [[droptoken]] à [[group]], cadrage [[scale]], légende [[caption]]",
+    "nl": "Verzend [[droptoken]] naar [[group]], uitsnede [[scale]], bijschrift [[caption]]",
+    "de": "[[droptoken]] an [[group]] senden, Bildanpassung [[scale]], Bildunterschrift [[caption]]"
+  },
+  "hint": {
+    "en": "One JPEG or PNG. Each frame has its own result in Activity. A slow send may continue after this card stops waiting; check Activity before sending again.",
+    "fr": "Un JPEG ou PNG. Chaque cadre a son résultat dans Activité. Un envoi lent peut continuer après la fin de l’attente de cette carte ; consultez Activité avant de renvoyer.",
+    "nl": "Eén JPEG of PNG. Elke fotolijst heeft een eigen resultaat in Activiteit. Een trage verzending kan doorgaan nadat deze kaart stopt met wachten; controleer Activiteit voordat je opnieuw verzendt.",
+    "de": "Ein JPEG oder PNG. Für jeden Rahmen gibt es ein eigenes Ergebnis unter Aktivitäten. Ein langsamer Versand kann weiterlaufen, nachdem diese Karte nicht mehr wartet. Prüfe Aktivitäten vor einem erneuten Versand."
+  },
+  "droptoken": [
+    "image"
+  ],
+  "args": [
+    {
+      "name": "group",
+      "type": "autocomplete",
+      "title": {
+        "en": "Frame group",
+        "fr": "Groupe de cadres",
+        "nl": "Groep fotolijsten",
+        "de": "Bilderrahmengruppe"
+      }
+    },
+    {
+      "name": "caption",
+      "type": "text",
+      "required": false,
+      "title": {
+        "en": "Caption",
+        "fr": "Légende",
+        "nl": "Bijschrift",
+        "de": "Bildunterschrift"
+      }
+    },
+    {
+      "name": "scale",
+      "type": "dropdown",
+      "title": {
+        "en": "Framing",
+        "fr": "Cadrage",
+        "nl": "Uitsnede",
+        "de": "Bildanpassung"
+      },
+      "values": [
+        {
+          "id": "fit",
+          "title": {
+            "en": "Fit the whole photo",
+            "fr": "Afficher la photo entière",
+            "nl": "Volledige foto tonen",
+            "de": "Ganzes Foto anzeigen"
+          }
+        },
+        {
+          "id": "fill",
+          "title": {
+            "en": "Fill the screen",
+            "fr": "Remplir l’écran",
+            "nl": "Scherm vullen",
+            "de": "Bildschirm ausfüllen"
+          }
+        }
+      ]
+    }
+  ]
+}

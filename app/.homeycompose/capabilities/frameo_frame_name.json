@@ -1,0 +1,13 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Frameo name",
+    "fr": "Nom Frameo",
+    "nl": "Frameo-naam",
+    "de": "Frameo-Name"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/icons/frameo-name.svg"
+}

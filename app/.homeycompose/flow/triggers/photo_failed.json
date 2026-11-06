@@ -1,0 +1,33 @@
+{
+  "title": {
+    "en": "A photo could not be sent",
+    "fr": "L’envoi d’une photo a échoué",
+    "nl": "Een foto kon niet worden verzonden",
+    "de": "Ein Foto konnte nicht gesendet werden"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=frameo"
+    }
+  ],
+  "tokens": [
+    {
+      "name": "reason",
+      "type": "string",
+      "title": {
+        "en": "Reason",
+        "fr": "Motif",
+        "nl": "Reden",
+        "de": "Grund"
+      },
+      "example": {
+        "en": "The frame is unreachable",
+        "fr": "Le cadre est inaccessible",
+        "nl": "De fotolijst is niet bereikbaar",
+        "de": "Der Bilderrahmen ist nicht erreichbar"
+      }
+    }
+  ]
+}

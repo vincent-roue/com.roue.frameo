@@ -1,0 +1,33 @@
+Send photos directly from Homey Pro to your Frameo frames.
+
+Add a frame with its friend code or scan its QR code on your phone. Manual entry is always available. Pairing sends no photo and requires no test image. Choose sending, viewing with gallery and widgets, or photo management. On the frame, open Settings → My friends, select the exact sender name chosen for Homey and allow viewing. Management and deletion also require permission to manage photos. No notification on the frame is needed.
+
+App settings contain Send, Gallery, Groups and Activity. Send lets you select several JPEG or PNG files for a one-time transfer from your phone or computer, or send a photo from a URL. Choose a frame or group, an optional caption and framing. Files are processed one at a time; keep the page open during transfer. HEIC files and videos cannot be sent. No photo collections are saved on Homey.
+
+Each local photo can be up to 8 MiB. Homey keeps only the temporary files needed for transfer and deletes them afterwards.
+
+Groups lets you create, rename and delete destinations. A group may have zero, one or several distinct frames; each frame may belong to several groups. Empty groups can be saved but cannot receive photos. Recipients are fixed when sending starts.
+
+Flow cards send one image from a URL or image tag to a frame or group, with caption and framing. They wait for an actual receipt for a limited time. If sending continues beyond that wait, the message asks you to check Activity before sending again. Partial group results identify the affected frames. Uncertain sends are never retried automatically.
+
+Activity keeps a bounded journal of per-photo, per-frame results: success, failure or uncertain, with a reason when something goes wrong. Received means that the frame acknowledged the photo, not that it is currently on screen. Interrupted sends are never replayed automatically after restart. The journal stores no photos, URLs or captions. No notifications are sent by default; Flow triggers let you choose your own reactions.
+
+The device page contains Photos, Videos, Total media, Included in slideshow and Hidden media, as well as Latest media received, Last communication, frame status and frame information. Photos appear in Gallery or a widget. Gallery offers filters and sorting, and management permission enables reversible slideshow hiding and showing. Permanent deletion requires a decoded preview and explicit confirmation. Refresh and check before repeating an uncertain change. Videos are listed without previews or modification.
+
+The counts reflect the last successful inventory. Photos and Videos count their respective types; Total media also includes greetings and unknown types. Visible and hidden items are both included in these counts. Included in slideshow and Hidden media divide all media types by their visibility. Inventory checks read only IDs, types and dates, without downloading files. They require gallery access and permission to view photos. In send-only mode or without that permission, an unavailable count does not mean zero.
+
+Latest media received shows the newest receipt date reported by the frame for media still present in the current inventory. It is separate from the check time and can move backwards after deletion. An empty inventory shows No media. If none of the media have a usable receipt date, the field shows Not reported. Inventory information is unavailable without the required access.
+
+Last communication shows the time of the most recent successful check, inventory or confirmed send. A failed operation does not replace this time. In Homey’s native device settings, use the status indicator setting to choose Photos, Videos, Total media, Included in slideshow or Hidden media for the device tile. This integration does not provide the frame’s used or free storage space.
+
+Each frame is checked automatically every 30 minutes by default. In its advanced settings, disable automatic checks or choose an interval from 1 to 1,440 minutes. The “Refresh frame information” Flow action starts a check on demand. The “A new media item was detected” Flow card provides the ID, type (photo, video, greeting or unknown) and the receipt date reported by the frame, if known. It identifies new IDs between successful inventories. The first inventory establishes a baseline and triggers nothing. Detection takes place during a check; it does not identify who sent the media.
+
+The inventory check time (detected_at) is separate from the frame’s receipt date (received_at). Changing the visibility of known media does not make it new media. Media added and removed between two checks cannot be detected. Each check triggers at most 100 Flow events; new_count gives the full number of new IDs and events_truncated indicates whether some Flow detections were omitted. Counts still cover the entire successful inventory.
+
+The widgets Frameo photo — Compact, Frameo photo — Square and Frameo photo — Large portrait offer three heights; Homey controls width. Add another variant to change height. Change photo picks a random preview from the slideshow. Automatic changes are off by default, initially every 5 minutes, adjustable from 1 to 1,440 minutes. They pause while hidden and after errors. The protocol does not identify the photo currently displayed on the frame.
+
+The engine runs directly on Homey Pro 2023 without a NAS or companion service. Pairing and relay use Frameo infrastructure. No album is copied to Homey. The shared widget cache is limited to 8 MiB, with at most one preview per frame. Gallery loads at most two previews at once and retains at most 8 MiB and 8 megapixels; these are not total browser or app RAM limits. Previews are released when leaving Gallery. Ordinary sending requires no Frameo+ account login; viewing and management use the rights granted to this Homey connection on the frame.
+
+In Activity, generate a diagnostic report, review its preview, then download or copy it. The report includes versions, permissions, recent errors, duration and memory measurements. It contains no photos, frame names, network addresses, private keys or pairing codes. Export and copying require your action; the report is not transmitted automatically. Engine measurements are sampled during its operations and do not measure all system memory exactly.
+
+Independent community app, not affiliated with Frameo ApS. Includes unframeo under GPL-3.0-or-later, revision 149f60b5ac7702f2cbb0761185b0d49a7431bf3f, with corresponding source and licences. Frame comparison, sleep, brightness and immediate display controls are not offered.

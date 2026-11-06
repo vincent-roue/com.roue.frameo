@@ -1,0 +1,37 @@
+name: Application checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.27.3'
+          cache-dependency-path: vendor/unframeo/go.sum
+      - run: npm install --ignore-scripts
+      - name: JavaScript, interfaces, four languages and widget variants
+        run: node --test app/tests/*.test.js
+      - name: Offline native adapter and protocol checks
+        working-directory: vendor/unframeo
+        run: go test ./cmd/homey-frameo ./internal/config ./internal/frameo ./internal/mdns ./internal/sdg
+      - name: Build embedded Homey engine
+        working-directory: vendor/unframeo
+        env:
+          CGO_ENABLED: '0'
+          GOOS: linux
+          GOARCH: arm64
+        run: go build -trimpath -buildvcs=false -ldflags='-s -w' -o ../../app/bin/homey-frameo-linux-arm64 ./cmd/homey-frameo
+      - name: Check synchronized widgets and validate package
+        run: |
+          node scripts/widget-assets.cjs --check
+          node scripts/build.cjs --publish

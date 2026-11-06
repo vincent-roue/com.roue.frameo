@@ -1,0 +1,15 @@
+{
+  "title": {
+    "en": "Refresh frame information",
+    "fr": "Actualiser les informations du cadre",
+    "nl": "Informatie over de fotolijst vernieuwen",
+    "de": "Informationen zum Bilderrahmen aktualisieren"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=frameo"
+    }
+  ]
+}

@@ -1,0 +1,202 @@
+{
+  "name": {
+    "en": "Photo frame",
+    "fr": "Cadre photo",
+    "nl": "Fotolijst",
+    "de": "Bilderrahmen"
+  },
+  "class": "other",
+  "images": {
+    "small": "/drivers/frameo/assets/images/small.png",
+    "large": "/drivers/frameo/assets/images/large.png"
+  },
+  "capabilities": [
+    "measure_frameo_photos",
+    "measure_frameo_videos",
+    "measure_frameo_media",
+    "measure_frameo_visible",
+    "measure_frameo_hidden",
+    "frameo_latest_received",
+    "frameo_last_communication",
+    "frameo_frame_status",
+    "frameo_frame_name",
+    "frameo_frame_placement",
+    "frameo_screen_resolution",
+    "frameo_connection_route",
+    "frameo_granted_permissions",
+    "frameo_status",
+    "frameo_last_sent",
+    "frameo_last_checked",
+    "frameo_name",
+    "frameo_placement",
+    "frameo_resolution",
+    "frameo_connection",
+    "frameo_permissions",
+    "frameo_photo_count",
+    "frameo_video_count",
+    "frameo_media_checked"
+  ],
+  "pair": [
+    {
+      "id": "connect"
+    }
+  ],
+  "repair": [
+    {
+      "id": "repair"
+    }
+  ],
+  "settings": [
+    {
+      "id": "photo_access_mode",
+      "type": "dropdown",
+      "label": {
+        "en": "Use this frame for",
+        "fr": "Utilisation du cadre",
+        "nl": "Deze fotolijst gebruiken voor",
+        "de": "Diesen Bilderrahmen verwenden für"
+      },
+      "value": "send",
+      "values": [
+        {
+          "id": "send",
+          "label": {
+            "en": "Send photos",
+            "fr": "Envoyer des photos",
+            "nl": "Foto’s verzenden",
+            "de": "Fotos senden"
+          }
+        },
+        {
+          "id": "manage",
+          "label": {
+            "en": "Send and manage photos",
+            "fr": "Envoyer et gérer les photos",
+            "nl": "Foto’s verzenden en beheren",
+            "de": "Fotos senden und verwalten"
+          }
+        }
+      ],
+      "hint": {
+        "en": "Gallery access also requires permission in Settings → My friends on the frame.",
+        "fr": "L’accès à la galerie nécessite aussi une autorisation dans Paramètres → Mes amis sur le cadre.",
+        "nl": "Toegang tot de galerij vereist ook toestemming via Instellingen → Mijn vrienden op de fotolijst.",
+        "de": "Für den Galerie-Zugriff ist auch eine Berechtigung unter Einstellungen → Meine Freunde am Bilderrahmen erforderlich."
+      }
+    },
+    {
+      "id": "auto_refresh_enabled",
+      "type": "checkbox",
+      "label": {
+        "en": "Refresh automatically",
+        "fr": "Actualiser automatiquement",
+        "nl": "Automatisch vernieuwen",
+        "de": "Automatisch aktualisieren"
+      },
+      "value": true,
+      "hint": {
+        "en": "Checks the connection and media inventory without downloading photos or videos. Inventory checks require gallery access and permission to view photos.",
+        "fr": "Vérifie la connexion et l’inventaire sans télécharger les photos ou vidéos. L’inventaire nécessite l’accès à la galerie et l’autorisation de consulter les photos.",
+        "nl": "Controleert de verbinding en media-inventaris zonder foto’s of video’s te downloaden. De inventaris vereist toegang tot de galerij en toestemming om foto’s te bekijken.",
+        "de": "Prüft Verbindung und Medienbestand, ohne Fotos oder Videos herunterzuladen. Die Bestandsprüfung erfordert Galerie-Zugriff und die Berechtigung zum Ansehen von Fotos."
+      }
+    },
+    {
+      "id": "auto_refresh_interval",
+      "type": "number",
+      "label": {
+        "en": "Refresh interval",
+        "fr": "Intervalle d’actualisation",
+        "nl": "Vernieuwingsinterval",
+        "de": "Aktualisierungsintervall"
+      },
+      "value": 30,
+      "min": 1,
+      "max": 1440,
+      "step": 1,
+      "units": {
+        "en": "min",
+        "fr": "min",
+        "nl": "min",
+        "de": "min"
+      },
+      "hint": {
+        "en": "New media are detected during checks, not in real time. A Flow action can start a check on demand.",
+        "fr": "Les nouveaux médias sont détectés lors des contrôles, pas en temps réel. Une action Flow permet de lancer un contrôle à la demande.",
+        "nl": "Nieuwe media worden tijdens controles ontdekt, niet in realtime. Met een Flow-actie kun je direct een controle starten.",
+        "de": "Neue Medien werden bei Prüfungen erkannt, nicht in Echtzeit. Eine Flow-Aktion kann bei Bedarf eine Prüfung starten."
+      }
+    },
+    {
+      "id": "sender_name",
+      "type": "text",
+      "label": {
+        "en": "Sender name",
+        "fr": "Nom de l’expéditeur",
+        "nl": "Naam van de afzender",
+        "de": "Absendername"
+      },
+      "value": "Homey",
+      "hint": {
+        "en": "The name shown alongside photos sent by Homey.",
+        "fr": "Le nom affiché avec les photos envoyées par Homey.",
+        "nl": "De naam die bij de door Homey verzonden foto’s wordt getoond.",
+        "de": "Der Name, der bei den von Homey gesendeten Fotos angezeigt wird."
+      }
+    }
+  ],
+  "capabilitiesOptions": {
+    "measure_frameo_photos": {
+      "preventTag": true,
+      "preventInsights": true
+    },
+    "measure_frameo_videos": {
+      "preventTag": true,
+      "preventInsights": true
+    },
+    "measure_frameo_media": {
+      "preventTag": true,
+      "preventInsights": true
+    },
+    "frameo_last_communication": {
+      "preventTag": true,
+      "preventInsights": true
+    },
+    "frameo_frame_status": {
+      "preventTag": true,
+      "preventInsights": true
+    },
+    "frameo_frame_name": {
+      "preventTag": true,
+      "preventInsights": true
+    },
+    "frameo_frame_placement": {
+      "preventTag": true,
+      "preventInsights": true
+    },
+    "frameo_screen_resolution": {
+      "preventTag": true,
+      "preventInsights": true
+    },
+    "frameo_connection_route": {
+      "preventTag": true,
+      "preventInsights": true
+    },
+    "frameo_granted_permissions": {
+      "preventTag": true,
+      "preventInsights": true
+    },
+    "measure_frameo_visible": {
+      "preventTag": true,
+      "preventInsights": true
+    },
+    "measure_frameo_hidden": {
+      "preventTag": true,
+      "preventInsights": true
+    },
+    "frameo_latest_received": {
+      "preventTag": true,
+      "preventInsights": true
+    }
+  }
+}

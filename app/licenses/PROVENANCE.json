@@ -1,0 +1,135 @@
+{
+  "appVersion": "0.13.0",
+  "binary": "bin/homey-frameo-linux-arm64",
+  "binarySha256": "b3e69465c63a02ae70b331001dc8829c531e7a61f554ecb759fed75d7026be70",
+  "verifiedAgainst": [
+    "app/bin/homey-frameo-linux-arm64",
+    "frameo-0.13.0-local.tar.gz",
+    "release/source-0.13.0"
+  ],
+  "sourceMethod": "Byte-for-byte copies from the exact-version Go module cache and matching installed Go toolchain.",
+  "runtime": {
+    "version": "go1.27.3",
+    "notices": [
+      {
+        "filename": "go1.27.3-LICENSE.txt",
+        "source": "https://go.googlesource.com/go/+/refs/tags/go1.27.3/LICENSE",
+        "bytes": 1453,
+        "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+      },
+      {
+        "filename": "go1.27.3-PATENTS.txt",
+        "source": "https://go.googlesource.com/go/+/refs/tags/go1.27.3/PATENTS",
+        "bytes": 1303,
+        "sha256": "96f408bfae65bf137fc2525d3ecb030271c50c1e90799f87abf8846d8dd505cc"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "module": "golang.org/x/crypto",
+      "version": "v0.57.0",
+      "moduleChecksum": "h1:3ZVCjf8Ggz7zneR/EHRVx68Ctf+2pmIMP2UFhh9cC6M=",
+      "upstreamCommit": "3f62bf119e84c6e35e8518a2958089ade622d1a3",
+      "upstreamTag": "refs/tags/v0.57.0",
+      "notices": [
+        {
+          "filename": "golang-x-crypto-v0.57.0-LICENSE.txt",
+          "source": "https://go.googlesource.com/crypto/+/3f62bf119e84c6e35e8518a2958089ade622d1a3/LICENSE",
+          "bytes": 1453,
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        },
+        {
+          "filename": "golang-x-crypto-v0.57.0-PATENTS.txt",
+          "source": "https://go.googlesource.com/crypto/+/3f62bf119e84c6e35e8518a2958089ade622d1a3/PATENTS",
+          "bytes": 1303,
+          "sha256": "96f408bfae65bf137fc2525d3ecb030271c50c1e90799f87abf8846d8dd505cc"
+        }
+      ]
+    },
+    {
+      "module": "golang.org/x/image",
+      "version": "v0.47.0",
+      "moduleChecksum": "h1:za/8gVz++PPZqmZJBNSISICN5Rrj5zixP/8K++fgmqo=",
+      "upstreamCommit": "c437a9130dcb43e6df402a034160826e29fd29b8",
+      "upstreamTag": "refs/tags/v0.47.0",
+      "notices": [
+        {
+          "filename": "golang-x-image-v0.47.0-LICENSE.txt",
+          "source": "https://go.googlesource.com/image/+/c437a9130dcb43e6df402a034160826e29fd29b8/LICENSE",
+          "bytes": 1453,
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        },
+        {
+          "filename": "golang-x-image-v0.47.0-PATENTS.txt",
+          "source": "https://go.googlesource.com/image/+/c437a9130dcb43e6df402a034160826e29fd29b8/PATENTS",
+          "bytes": 1303,
+          "sha256": "96f408bfae65bf137fc2525d3ecb030271c50c1e90799f87abf8846d8dd505cc"
+        }
+      ]
+    },
+    {
+      "module": "golang.org/x/net",
+      "version": "v0.59.0",
+      "moduleChecksum": "h1:5zfYln+w5XCxwrnMMJPufRgNoXEaGxl0wo5GqPXyues=",
+      "upstreamCommit": "540d04cfe5028e2655754591a4d3e08c586809f2",
+      "upstreamTag": "refs/tags/v0.59.0",
+      "notices": [
+        {
+          "filename": "golang-x-net-v0.59.0-LICENSE.txt",
+          "source": "https://go.googlesource.com/net/+/540d04cfe5028e2655754591a4d3e08c586809f2/LICENSE",
+          "bytes": 1453,
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        },
+        {
+          "filename": "golang-x-net-v0.59.0-PATENTS.txt",
+          "source": "https://go.googlesource.com/net/+/540d04cfe5028e2655754591a4d3e08c586809f2/PATENTS",
+          "bytes": 1303,
+          "sha256": "96f408bfae65bf137fc2525d3ecb030271c50c1e90799f87abf8846d8dd505cc"
+        }
+      ]
+    },
+    {
+      "module": "golang.org/x/sys",
+      "version": "v0.49.0",
+      "moduleChecksum": "h1:XbzkgYJHdqh/8m2Uu0W/dQv8nktxx4BFHp1M0gROTXA=",
+      "upstreamCommit": "b6b8557e8e2974925aec7a136ba0e323eedc5f43",
+      "upstreamTag": "refs/tags/v0.49.0",
+      "notices": [
+        {
+          "filename": "golang-x-sys-v0.49.0-LICENSE.txt",
+          "source": "https://go.googlesource.com/sys/+/b6b8557e8e2974925aec7a136ba0e323eedc5f43/LICENSE",
+          "bytes": 1453,
+          "sha256": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad"
+        },
+        {
+          "filename": "golang-x-sys-v0.49.0-PATENTS.txt",
+          "source": "https://go.googlesource.com/sys/+/b6b8557e8e2974925aec7a136ba0e323eedc5f43/PATENTS",
+          "bytes": 1303,
+          "sha256": "96f408bfae65bf137fc2525d3ecb030271c50c1e90799f87abf8846d8dd505cc"
+        }
+      ]
+    },
+    {
+      "module": "google.golang.org/protobuf",
+      "version": "v1.36.12",
+      "moduleChecksum": "h1:pJOKDDOyeXErUroCihFAd5LQuwXBSpVnKGrj5o/fwxc=",
+      "upstreamCommit": "cdd4c5f7406e82462949c7a65defa9f3029c162d",
+      "upstreamTag": "refs/tags/v1.36.12",
+      "notices": [
+        {
+          "filename": "google.golang-protobuf-v1.36.12-LICENSE.txt",
+          "source": "https://go.googlesource.com/protobuf/+/cdd4c5f7406e82462949c7a65defa9f3029c162d/LICENSE",
+          "bytes": 1479,
+          "sha256": "4835612df0098ca95f8e7d9e3bffcb02358d435dbb38057c844c99d7f725eb20"
+        },
+        {
+          "filename": "google.golang-protobuf-v1.36.12-PATENTS.txt",
+          "source": "https://go.googlesource.com/protobuf/+/cdd4c5f7406e82462949c7a65defa9f3029c162d/PATENTS",
+          "bytes": 1303,
+          "sha256": "96f408bfae65bf137fc2525d3ecb030271c50c1e90799f87abf8846d8dd505cc"
+        }
+      ]
+    }
+  ]
+}

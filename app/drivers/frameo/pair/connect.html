@@ -1,0 +1,59 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="stylesheet" href="frameo.css" data-frameo-inline>
+</head><body data-mode="pair"><main class="pair-page">
+  <header class="brand-header">
+    <img class="brand-logo" src="../../../assets/brand/frameo-wordmark.svg" alt="Frameo" width="122" height="33" data-frameo-asset>
+    <h1 data-i18n="pair.heading"></h1>
+    <p class="subtitle" data-i18n="pair.intro"></p>
+  </header>
+  <div id="connection-content">
+  <fieldset class="access-mode-options" id="access-mode-options">
+    <legend data-i18n="access.mode_title"></legend>
+    <label class="mode-option"><input id="access-mode-send" type="radio" name="photo-access-mode" value="send" checked><span class="mode-copy"><strong data-i18n="access.send_title"></strong><small data-i18n="access.send_description"></small></span></label>
+    <label class="mode-option"><input id="access-mode-view" type="radio" name="photo-access-mode" value="view"><span class="mode-copy"><strong data-i18n="access.view_title"></strong><small data-i18n="access.view_description"></small></span></label>
+    <label class="mode-option"><input id="access-mode-manage" type="radio" name="photo-access-mode" value="manage"><span class="mode-copy"><strong data-i18n="access.manage_title"></strong><small data-i18n="access.manage_description"></small></span></label>
+  </fieldset>
+  <section class="frame-instruction" aria-labelledby="frame-step-title">
+    <div class="friend-icon"><img src="../../../assets/brand/add-friend.png" width="34" height="34" alt="" data-frameo-asset></div>
+    <div><span class="eyebrow" data-i18n="pair.on_frame"></span><h2 id="frame-step-title" data-i18n="pair.open_add_friend"></h2><p data-i18n="pair.frame_hint"></p></div>
+  </section>
+  <button id="scan" class="scan-button" type="button" hidden>
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 12V4a1 1 0 0 1 1-1h8m8 0h8a1 1 0 0 1 1 1v8m0 8v8a1 1 0 0 1-1 1h-8m-8 0H4a1 1 0 0 1-1-1v-8"/><path d="M8 8h5v5H8zm11 0h5v5h-5zM8 19h5v5H8zm11 0h5v5h-5z"/></svg>
+    <span><strong data-i18n="qr.scan_button"></strong><small data-i18n="qr.scan_subtitle"></small></span><span class="chevron" aria-hidden="true">›</span>
+  </button>
+  <p id="manual-divider" class="divider" hidden><span data-i18n="pair.manual_alternative"></span></p>
+  <form id="pair-form" novalidate>
+    <label class="code-label" for="code" data-i18n="pair.code_label"></label>
+    <input id="code" class="code-input" type="text" inputmode="numeric" autocomplete="one-time-code" autocapitalize="off" spellcheck="false" maxlength="64" placeholder="00 00 00 00 00" required aria-describedby="code-help">
+    <p id="code-help" class="field-hint" data-i18n="pair.code_help"></p>
+    <details class="sender-options"><summary data-i18n="pair.sender_options"></summary><div class="sender-fields">
+      <label for="sender" data-i18n="pair.sender_label"></label><input id="sender" class="text-input" type="text" autocomplete="off" maxlength="160" value="Homey" required>
+      <p class="field-hint" data-i18n="pair.sender_help"></p>
+    </div></details>
+    <p id="status" class="form-status" role="status" aria-live="polite"></p><p id="error" class="form-error" role="alert"></p>
+    <button id="submit" class="primary-button" type="submit" data-i18n="pair.submit"></button>
+    <p class="privacy-note" data-i18n="pair.no_photo"></p>
+  </form>
+  </div>
+  <section id="access-guide" class="access-guide" aria-labelledby="access-guide-title" hidden>
+    <div class="access-guide-icon"><img src="../../../assets/icons/frameo-permissions.svg" width="28" height="28" alt="" data-frameo-asset></div>
+    <h2 id="access-guide-title" data-i18n="access.guide_title"></h2><p class="subtitle" data-i18n="access.guide_intro"></p>
+    <ol class="access-steps"><li data-i18n="access.guide_open_settings"></li><li><span data-i18n="access.guide_select_sender"></span><strong id="access-sender" class="access-sender"></strong></li><li id="access-enable-copy" data-i18n="access.guide_enable"></li></ol>
+    <p class="access-notice" data-i18n="access.guide_notice"></p>
+    <p id="access-status" class="form-status" role="status" aria-live="polite"></p><p id="access-error" class="form-error" role="alert"></p>
+    <button id="access-verify" class="primary-button" type="button" data-i18n="access.verify"></button>
+    <button id="access-later" class="secondary-button" type="button" data-i18n="access.later"></button>
+  </section>
+</main>
+<section id="scanner-overlay" class="scanner-overlay" role="dialog" aria-modal="true" aria-labelledby="scanner-title" hidden><div class="scanner-panel">
+  <h2 id="scanner-title" data-i18n="qr.title"></h2><p class="subtitle" data-i18n="qr.scan_hint"></p>
+  <div class="camera-window"><video id="scanner-video" playsinline autoplay muted></video><div class="camera-guide" aria-hidden="true"></div></div>
+  <p id="scanner-status" class="scanner-status" role="status" aria-live="polite"></p>
+  <button id="scanner-photo" class="primary-button" type="button" data-i18n="qr.take_photo"></button>
+  <button id="scanner-close" class="secondary-button" type="button" data-i18n="qr.manual_button"></button>
+</div></section>
+<input id="qr-file" type="file" accept="image/*" capture="environment" hidden aria-label="QR code">
+<canvas id="scanner-canvas" hidden></canvas>
+<script src="vendor/jsQR.js" data-frameo-inline></script><script src="qr-code.js" data-frameo-inline></script><script src="qr-scanner.js" data-frameo-inline></script><script src="pair-ui.js" data-frameo-inline></script>
+</body></html>

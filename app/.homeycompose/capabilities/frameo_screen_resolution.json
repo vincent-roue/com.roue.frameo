@@ -1,0 +1,13 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Screen",
+    "fr": "Écran",
+    "nl": "Scherm",
+    "de": "Bildschirm"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/icons/frameo-resolution.svg"
+}

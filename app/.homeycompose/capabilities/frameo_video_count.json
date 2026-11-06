@@ -1,0 +1,16 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Videos",
+    "fr": "Vidéos",
+    "nl": "Video’s",
+    "de": "Videos"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": null,
+  "min": 0,
+  "step": 1,
+  "decimals": 0,
+  "icon": "/assets/icons/frameo-video-count.svg"
+}

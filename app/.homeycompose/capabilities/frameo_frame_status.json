@@ -1,0 +1,13 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Frame status",
+    "fr": "État du cadre",
+    "nl": "Status van de fotolijst",
+    "de": "Status des Bilderrahmens"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/icons/frameo-status.svg"
+}

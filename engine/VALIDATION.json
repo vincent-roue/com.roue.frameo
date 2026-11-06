@@ -1,0 +1,9 @@
+{
+  "version": "0.13.1",
+  "platform": "linux/arm64",
+  "sha256": "b3e69465c63a02ae70b331001dc8829c531e7a61f554ecb759fed75d7026be70",
+  "toolchain": "go1.27.3",
+  "basis": "The identical bundled ARM64 engine ran in version 0.13.0 on Homey Pro (2023) with a Pexar frame.",
+  "candidateChecks": "App Store package validation and JavaScript test suite.",
+  "rebuiltForCandidate": false
+}

@@ -1,0 +1,78 @@
+{
+  "title": {
+    "en": "Send a photo from a URL",
+    "fr": "Envoyer une photo depuis une URL",
+    "nl": "Een foto via een URL verzenden",
+    "de": "Ein Foto von einer URL senden"
+  },
+  "titleFormatted": {
+    "en": "Send [[url]], framing [[scale]], caption [[caption]]",
+    "fr": "Envoyer [[url]], cadrage [[scale]], légende [[caption]]",
+    "nl": "Verzend [[url]], uitsnede [[scale]], bijschrift [[caption]]",
+    "de": "[[url]] senden, Bildanpassung [[scale]], Bildunterschrift [[caption]]"
+  },
+  "hint": {
+    "en": "One JPEG or PNG. Each frame has its own result in Activity. A slow send may continue after this card stops waiting; check Activity before sending again.",
+    "fr": "Un JPEG ou PNG. Chaque cadre a son résultat dans Activité. Un envoi lent peut continuer après la fin de l’attente de cette carte ; consultez Activité avant de renvoyer.",
+    "nl": "Eén JPEG of PNG. Elke fotolijst heeft een eigen resultaat in Activiteit. Een trage verzending kan doorgaan nadat deze kaart stopt met wachten; controleer Activiteit voordat je opnieuw verzendt.",
+    "de": "Ein JPEG oder PNG. Für jeden Rahmen gibt es ein eigenes Ergebnis unter Aktivitäten. Ein langsamer Versand kann weiterlaufen, nachdem diese Karte nicht mehr wartet. Prüfe Aktivitäten vor einem erneuten Versand."
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=frameo"
+    },
+    {
+      "name": "url",
+      "type": "text",
+      "title": {
+        "en": "Photo URL",
+        "fr": "URL de la photo",
+        "nl": "Foto-URL",
+        "de": "Foto-URL"
+      }
+    },
+    {
+      "name": "caption",
+      "type": "text",
+      "required": false,
+      "title": {
+        "en": "Caption",
+        "fr": "Légende",
+        "nl": "Bijschrift",
+        "de": "Bildunterschrift"
+      }
+    },
+    {
+      "name": "scale",
+      "type": "dropdown",
+      "title": {
+        "en": "Framing",
+        "fr": "Cadrage",
+        "nl": "Uitsnede",
+        "de": "Bildanpassung"
+      },
+      "values": [
+        {
+          "id": "fit",
+          "title": {
+            "en": "Fit the whole photo",
+            "fr": "Afficher la photo entière",
+            "nl": "Volledige foto tonen",
+            "de": "Ganzes Foto anzeigen"
+          }
+        },
+        {
+          "id": "fill",
+          "title": {
+            "en": "Fill the screen",
+            "fr": "Remplir l’écran",
+            "nl": "Scherm vullen",
+            "de": "Bildschirm ausfüllen"
+          }
+        }
+      ]
+    }
+  ]
+}

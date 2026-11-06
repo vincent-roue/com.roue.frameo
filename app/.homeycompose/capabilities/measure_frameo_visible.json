@@ -1,0 +1,16 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Included in slideshow",
+    "fr": "Inclus dans le diaporama",
+    "nl": "Opgenomen in diavoorstelling",
+    "de": "In Diashow enthalten"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "min": 0,
+  "step": 1,
+  "decimals": 0,
+  "icon": "/assets/icons/frameo-slideshow-count.svg"
+}

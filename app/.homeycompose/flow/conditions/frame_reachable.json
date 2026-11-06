@@ -1,0 +1,15 @@
+{
+  "title": {
+    "en": "The frame !{{is|is not}} reachable",
+    "fr": "Le cadre !{{est|n’est pas}} joignable",
+    "nl": "De fotolijst !{{is|is niet}} bereikbaar",
+    "de": "Der Bilderrahmen !{{ist|ist nicht}} erreichbar"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=frameo"
+    }
+  ]
+}

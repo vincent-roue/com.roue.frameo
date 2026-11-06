@@ -1,0 +1,13 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Permissions",
+    "fr": "Autorisations",
+    "nl": "Machtigingen",
+    "de": "Berechtigungen"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": null,
+  "icon": "/assets/icons/frameo-permissions.svg"
+}

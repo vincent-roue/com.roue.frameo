@@ -1,0 +1,1469 @@
+{
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
+  "id": "com.roue.frameo",
+  "version": "0.13.1",
+  "compatibility": ">=12.9.0",
+  "sdk": 3,
+  "runtime": "nodejs",
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Frameo",
+    "fr": "Frameo",
+    "nl": "Frameo",
+    "de": "Frameo"
+  },
+  "description": {
+    "en": "Memories for your photo frame",
+    "fr": "Des souvenirs pour vos cadres photo",
+    "nl": "Herinneringen voor je fotolijst",
+    "de": "Erinnerungen für deinen Bilderrahmen"
+  },
+  "category": [
+    "video"
+  ],
+  "brandColor": "#FF2A3A",
+  "author": {
+    "name": "Vincent Roué"
+  },
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "api": {
+    "status": {
+      "method": "GET",
+      "path": "/status"
+    },
+    "refresh": {
+      "method": "POST",
+      "path": "/refresh"
+    },
+    "sendUrl": {
+      "method": "POST",
+      "path": "/send-url"
+    },
+    "requestPermission": {
+      "method": "POST",
+      "path": "/request-permission"
+    },
+    "galleryFrames": {
+      "method": "GET",
+      "path": "/gallery/frames"
+    },
+    "galleryList": {
+      "method": "POST",
+      "path": "/gallery/list"
+    },
+    "galleryPreview": {
+      "method": "POST",
+      "path": "/gallery/preview"
+    },
+    "galleryDelete": {
+      "method": "POST",
+      "path": "/gallery/delete"
+    },
+    "galleryMode": {
+      "method": "POST",
+      "path": "/gallery/mode"
+    },
+    "galleryCheckAccess": {
+      "method": "POST",
+      "path": "/gallery/check-access"
+    },
+    "galleryVisibility": {
+      "method": "POST",
+      "path": "/gallery/visibility"
+    },
+    "groupsList": {
+      "method": "GET",
+      "path": "/groups"
+    },
+    "groupsSave": {
+      "method": "POST",
+      "path": "/groups/save"
+    },
+    "groupsDelete": {
+      "method": "POST",
+      "path": "/groups/delete"
+    },
+    "transfersStart": {
+      "method": "POST",
+      "path": "/transfers/start"
+    },
+    "transfersManual": {
+      "method": "POST",
+      "path": "/transfers/manual"
+    },
+    "transfersJob": {
+      "method": "GET",
+      "path": "/transfers/job"
+    },
+    "transfersHistory": {
+      "method": "GET",
+      "path": "/transfers/history"
+    },
+    "transfersClear": {
+      "method": "POST",
+      "path": "/transfers/clear"
+    },
+    "transfersFinish": {
+      "method": "POST",
+      "path": "/transfers/finish"
+    },
+    "uploadsStart": {
+      "method": "POST",
+      "path": "/uploads/start"
+    },
+    "uploadsChunk": {
+      "method": "POST",
+      "path": "/uploads/chunk"
+    },
+    "uploadsFinish": {
+      "method": "POST",
+      "path": "/uploads/finish"
+    },
+    "uploadsAbort": {
+      "method": "POST",
+      "path": "/uploads/abort"
+    },
+    "diagnostics": {
+      "method": "GET",
+      "path": "/diagnostics"
+    }
+  },
+  "contributors": {
+    "developers": [
+      {
+        "name": "Borje Granberg"
+      },
+      {
+        "name": "Pavel Fedin"
+      }
+    ]
+  },
+  "flow": {
+    "triggers": [
+      {
+        "title": {
+          "en": "A new media item was detected",
+          "fr": "Un nouveau média a été détecté",
+          "nl": "Een nieuw mediabestand is ontdekt",
+          "de": "Ein neues Medium wurde erkannt"
+        },
+        "hint": {
+          "en": "Detects a new media ID during an inventory check, without downloading the file. The first successful inventory establishes a baseline and does not trigger this Flow.",
+          "fr": "Signale un nouvel identifiant de média lors d’un inventaire, sans télécharger le fichier. Le premier inventaire réussi sert de référence et ne déclenche pas ce Flow.",
+          "nl": "Meldt een nieuw media-ID tijdens een inventariscontrole, zonder het bestand te downloaden. De eerste geslaagde inventaris vormt de beginstand en activeert deze Flow niet.",
+          "de": "Meldet bei einer Bestandsprüfung eine neue Medien-ID, ohne die Datei herunterzuladen. Die erste erfolgreiche Bestandsprüfung bildet die Ausgangsbasis und löst diesen Flow nicht aus."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=frameo"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "media_id",
+            "type": "string",
+            "title": {
+              "en": "Media ID",
+              "fr": "Identifiant du média",
+              "nl": "Media-ID",
+              "de": "Medien-ID"
+            },
+            "example": "123456789"
+          },
+          {
+            "name": "type",
+            "type": "string",
+            "title": {
+              "en": "Media type",
+              "fr": "Type de média",
+              "nl": "Mediatype",
+              "de": "Medientyp"
+            },
+            "example": "photo"
+          },
+          {
+            "name": "received_at",
+            "type": "string",
+            "title": {
+              "en": "Received at (if known)",
+              "fr": "Réception (si connue)",
+              "nl": "Ontvangen op (indien bekend)",
+              "de": "Empfangen am (falls bekannt)"
+            },
+            "example": "2026-11-04T12:00:00Z"
+          },
+          {
+            "name": "detected_at",
+            "type": "string",
+            "title": {
+              "en": "Inventory check time",
+              "fr": "Date du contrôle",
+              "nl": "Tijdstip van de inventariscontrole",
+              "de": "Zeitpunkt der Bestandsprüfung"
+            },
+            "example": "2026-11-04T12:30:00Z"
+          },
+          {
+            "name": "new_count",
+            "type": "number",
+            "title": {
+              "en": "New media in this check",
+              "fr": "Nouveaux médias lors de ce contrôle",
+              "nl": "Nieuwe media bij deze controle",
+              "de": "Neue Medien bei dieser Prüfung"
+            },
+            "example": 3
+          },
+          {
+            "name": "events_truncated",
+            "type": "boolean",
+            "title": {
+              "en": "Flow detections limited",
+              "fr": "Détections Flow limitées",
+              "nl": "Flow-detecties beperkt",
+              "de": "Flow-Erkennungen begrenzt"
+            },
+            "example": false
+          }
+        ],
+        "id": "media_detected"
+      },
+      {
+        "title": {
+          "en": "A photo could not be sent",
+          "fr": "L’envoi d’une photo a échoué",
+          "nl": "Een foto kon niet worden verzonden",
+          "de": "Ein Foto konnte nicht gesendet werden"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=frameo"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "reason",
+            "type": "string",
+            "title": {
+              "en": "Reason",
+              "fr": "Motif",
+              "nl": "Reden",
+              "de": "Grund"
+            },
+            "example": {
+              "en": "The frame is unreachable",
+              "fr": "Le cadre est inaccessible",
+              "nl": "De fotolijst is niet bereikbaar",
+              "de": "Der Bilderrahmen ist nicht erreichbar"
+            }
+          }
+        ],
+        "id": "photo_failed"
+      },
+      {
+        "title": {
+          "en": "A photo was received",
+          "fr": "Une photo a été reçue",
+          "nl": "Een foto is ontvangen",
+          "de": "Ein Foto wurde empfangen"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=frameo"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "received_at",
+            "type": "string",
+            "title": {
+              "en": "Received at",
+              "fr": "Date de réception",
+              "nl": "Ontvangen op",
+              "de": "Empfangen am"
+            },
+            "example": "2026-11-03T12:00:00Z"
+          }
+        ],
+        "id": "photo_received"
+      }
+    ],
+    "conditions": [
+      {
+        "title": {
+          "en": "The frame !{{is|is not}} reachable",
+          "fr": "Le cadre !{{est|n’est pas}} joignable",
+          "nl": "De fotolijst !{{is|is niet}} bereikbaar",
+          "de": "Der Bilderrahmen !{{ist|ist nicht}} erreichbar"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=frameo"
+          }
+        ],
+        "id": "frame_reachable"
+      }
+    ],
+    "actions": [
+      {
+        "title": {
+          "en": "Refresh frame information",
+          "fr": "Actualiser les informations du cadre",
+          "nl": "Informatie over de fotolijst vernieuwen",
+          "de": "Informationen zum Bilderrahmen aktualisieren"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=frameo"
+          }
+        ],
+        "id": "refresh_frame"
+      },
+      {
+        "title": {
+          "en": "Send an image tag to a group",
+          "fr": "Envoyer un tag image à un groupe",
+          "nl": "Een afbeeldingstag naar een groep verzenden",
+          "de": "Einen Bild-Tag an eine Gruppe senden"
+        },
+        "titleFormatted": {
+          "en": "Send [[droptoken]] to [[group]], framing [[scale]], caption [[caption]]",
+          "fr": "Envoyer [[droptoken]] à [[group]], cadrage [[scale]], légende [[caption]]",
+          "nl": "Verzend [[droptoken]] naar [[group]], uitsnede [[scale]], bijschrift [[caption]]",
+          "de": "[[droptoken]] an [[group]] senden, Bildanpassung [[scale]], Bildunterschrift [[caption]]"
+        },
+        "hint": {
+          "en": "One JPEG or PNG. Each frame has its own result in Activity. A slow send may continue after this card stops waiting; check Activity before sending again.",
+          "fr": "Un JPEG ou PNG. Chaque cadre a son résultat dans Activité. Un envoi lent peut continuer après la fin de l’attente de cette carte ; consultez Activité avant de renvoyer.",
+          "nl": "Eén JPEG of PNG. Elke fotolijst heeft een eigen resultaat in Activiteit. Een trage verzending kan doorgaan nadat deze kaart stopt met wachten; controleer Activiteit voordat je opnieuw verzendt.",
+          "de": "Ein JPEG oder PNG. Für jeden Rahmen gibt es ein eigenes Ergebnis unter Aktivitäten. Ein langsamer Versand kann weiterlaufen, nachdem diese Karte nicht mehr wartet. Prüfe Aktivitäten vor einem erneuten Versand."
+        },
+        "droptoken": [
+          "image"
+        ],
+        "args": [
+          {
+            "name": "group",
+            "type": "autocomplete",
+            "title": {
+              "en": "Frame group",
+              "fr": "Groupe de cadres",
+              "nl": "Groep fotolijsten",
+              "de": "Bilderrahmengruppe"
+            }
+          },
+          {
+            "name": "caption",
+            "type": "text",
+            "required": false,
+            "title": {
+              "en": "Caption",
+              "fr": "Légende",
+              "nl": "Bijschrift",
+              "de": "Bildunterschrift"
+            }
+          },
+          {
+            "name": "scale",
+            "type": "dropdown",
+            "title": {
+              "en": "Framing",
+              "fr": "Cadrage",
+              "nl": "Uitsnede",
+              "de": "Bildanpassung"
+            },
+            "values": [
+              {
+                "id": "fit",
+                "title": {
+                  "en": "Fit the whole photo",
+                  "fr": "Afficher la photo entière",
+                  "nl": "Volledige foto tonen",
+                  "de": "Ganzes Foto anzeigen"
+                }
+              },
+              {
+                "id": "fill",
+                "title": {
+                  "en": "Fill the screen",
+                  "fr": "Remplir l’écran",
+                  "nl": "Scherm vullen",
+                  "de": "Bildschirm ausfüllen"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "send_group_photo_image"
+      },
+      {
+        "title": {
+          "en": "Send a photo from a URL to a group",
+          "fr": "Envoyer une photo depuis une URL à un groupe",
+          "nl": "Een foto via een URL naar een groep verzenden",
+          "de": "Ein Foto von einer URL an eine Gruppe senden"
+        },
+        "titleFormatted": {
+          "en": "Send [[url]] to [[group]], framing [[scale]], caption [[caption]]",
+          "fr": "Envoyer [[url]] à [[group]], cadrage [[scale]], légende [[caption]]",
+          "nl": "Verzend [[url]] naar [[group]], uitsnede [[scale]], bijschrift [[caption]]",
+          "de": "[[url]] an [[group]] senden, Bildanpassung [[scale]], Bildunterschrift [[caption]]"
+        },
+        "hint": {
+          "en": "One JPEG or PNG. Each frame has its own result in Activity. A slow send may continue after this card stops waiting; check Activity before sending again.",
+          "fr": "Un JPEG ou PNG. Chaque cadre a son résultat dans Activité. Un envoi lent peut continuer après la fin de l’attente de cette carte ; consultez Activité avant de renvoyer.",
+          "nl": "Eén JPEG of PNG. Elke fotolijst heeft een eigen resultaat in Activiteit. Een trage verzending kan doorgaan nadat deze kaart stopt met wachten; controleer Activiteit voordat je opnieuw verzendt.",
+          "de": "Ein JPEG oder PNG. Für jeden Rahmen gibt es ein eigenes Ergebnis unter Aktivitäten. Ein langsamer Versand kann weiterlaufen, nachdem diese Karte nicht mehr wartet. Prüfe Aktivitäten vor einem erneuten Versand."
+        },
+        "args": [
+          {
+            "name": "group",
+            "type": "autocomplete",
+            "title": {
+              "en": "Frame group",
+              "fr": "Groupe de cadres",
+              "nl": "Groep fotolijsten",
+              "de": "Bilderrahmengruppe"
+            }
+          },
+          {
+            "name": "url",
+            "type": "text",
+            "title": {
+              "en": "Photo URL",
+              "fr": "URL de la photo",
+              "nl": "Foto-URL",
+              "de": "Foto-URL"
+            }
+          },
+          {
+            "name": "caption",
+            "type": "text",
+            "required": false,
+            "title": {
+              "en": "Caption",
+              "fr": "Légende",
+              "nl": "Bijschrift",
+              "de": "Bildunterschrift"
+            }
+          },
+          {
+            "name": "scale",
+            "type": "dropdown",
+            "title": {
+              "en": "Framing",
+              "fr": "Cadrage",
+              "nl": "Uitsnede",
+              "de": "Bildanpassung"
+            },
+            "values": [
+              {
+                "id": "fit",
+                "title": {
+                  "en": "Fit the whole photo",
+                  "fr": "Afficher la photo entière",
+                  "nl": "Volledige foto tonen",
+                  "de": "Ganzes Foto anzeigen"
+                }
+              },
+              {
+                "id": "fill",
+                "title": {
+                  "en": "Fill the screen",
+                  "fr": "Remplir l’écran",
+                  "nl": "Scherm vullen",
+                  "de": "Bildschirm ausfüllen"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "send_group_photo_url"
+      },
+      {
+        "title": {
+          "en": "Send an image tag",
+          "fr": "Envoyer un tag image",
+          "nl": "Een afbeeldingstag verzenden",
+          "de": "Einen Bild-Tag senden"
+        },
+        "titleFormatted": {
+          "en": "Send [[droptoken]], framing [[scale]], caption [[caption]]",
+          "fr": "Envoyer [[droptoken]], cadrage [[scale]], légende [[caption]]",
+          "nl": "Verzend [[droptoken]], uitsnede [[scale]], bijschrift [[caption]]",
+          "de": "[[droptoken]] senden, Bildanpassung [[scale]], Bildunterschrift [[caption]]"
+        },
+        "hint": {
+          "en": "One JPEG or PNG. Each frame has its own result in Activity. A slow send may continue after this card stops waiting; check Activity before sending again.",
+          "fr": "Un JPEG ou PNG. Chaque cadre a son résultat dans Activité. Un envoi lent peut continuer après la fin de l’attente de cette carte ; consultez Activité avant de renvoyer.",
+          "nl": "Eén JPEG of PNG. Elke fotolijst heeft een eigen resultaat in Activiteit. Een trage verzending kan doorgaan nadat deze kaart stopt met wachten; controleer Activiteit voordat je opnieuw verzendt.",
+          "de": "Ein JPEG oder PNG. Für jeden Rahmen gibt es ein eigenes Ergebnis unter Aktivitäten. Ein langsamer Versand kann weiterlaufen, nachdem diese Karte nicht mehr wartet. Prüfe Aktivitäten vor einem erneuten Versand."
+        },
+        "droptoken": [
+          "image"
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=frameo"
+          },
+          {
+            "name": "caption",
+            "type": "text",
+            "required": false,
+            "title": {
+              "en": "Caption",
+              "fr": "Légende",
+              "nl": "Bijschrift",
+              "de": "Bildunterschrift"
+            }
+          },
+          {
+            "name": "scale",
+            "type": "dropdown",
+            "title": {
+              "en": "Framing",
+              "fr": "Cadrage",
+              "nl": "Uitsnede",
+              "de": "Bildanpassung"
+            },
+            "values": [
+              {
+                "id": "fit",
+                "title": {
+                  "en": "Fit the whole photo",
+                  "fr": "Afficher la photo entière",
+                  "nl": "Volledige foto tonen",
+                  "de": "Ganzes Foto anzeigen"
+                }
+              },
+              {
+                "id": "fill",
+                "title": {
+                  "en": "Fill the screen",
+                  "fr": "Remplir l’écran",
+                  "nl": "Scherm vullen",
+                  "de": "Bildschirm ausfüllen"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "send_photo_image"
+      },
+      {
+        "title": {
+          "en": "Send a photo from a URL",
+          "fr": "Envoyer une photo depuis une URL",
+          "nl": "Een foto via een URL verzenden",
+          "de": "Ein Foto von einer URL senden"
+        },
+        "titleFormatted": {
+          "en": "Send [[url]], framing [[scale]], caption [[caption]]",
+          "fr": "Envoyer [[url]], cadrage [[scale]], légende [[caption]]",
+          "nl": "Verzend [[url]], uitsnede [[scale]], bijschrift [[caption]]",
+          "de": "[[url]] senden, Bildanpassung [[scale]], Bildunterschrift [[caption]]"
+        },
+        "hint": {
+          "en": "One JPEG or PNG. Each frame has its own result in Activity. A slow send may continue after this card stops waiting; check Activity before sending again.",
+          "fr": "Un JPEG ou PNG. Chaque cadre a son résultat dans Activité. Un envoi lent peut continuer après la fin de l’attente de cette carte ; consultez Activité avant de renvoyer.",
+          "nl": "Eén JPEG of PNG. Elke fotolijst heeft een eigen resultaat in Activiteit. Een trage verzending kan doorgaan nadat deze kaart stopt met wachten; controleer Activiteit voordat je opnieuw verzendt.",
+          "de": "Ein JPEG oder PNG. Für jeden Rahmen gibt es ein eigenes Ergebnis unter Aktivitäten. Ein langsamer Versand kann weiterlaufen, nachdem diese Karte nicht mehr wartet. Prüfe Aktivitäten vor einem erneuten Versand."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=frameo"
+          },
+          {
+            "name": "url",
+            "type": "text",
+            "title": {
+              "en": "Photo URL",
+              "fr": "URL de la photo",
+              "nl": "Foto-URL",
+              "de": "Foto-URL"
+            }
+          },
+          {
+            "name": "caption",
+            "type": "text",
+            "required": false,
+            "title": {
+              "en": "Caption",
+              "fr": "Légende",
+              "nl": "Bijschrift",
+              "de": "Bildunterschrift"
+            }
+          },
+          {
+            "name": "scale",
+            "type": "dropdown",
+            "title": {
+              "en": "Framing",
+              "fr": "Cadrage",
+              "nl": "Uitsnede",
+              "de": "Bildanpassung"
+            },
+            "values": [
+              {
+                "id": "fit",
+                "title": {
+                  "en": "Fit the whole photo",
+                  "fr": "Afficher la photo entière",
+                  "nl": "Volledige foto tonen",
+                  "de": "Ganzes Foto anzeigen"
+                }
+              },
+              {
+                "id": "fill",
+                "title": {
+                  "en": "Fill the screen",
+                  "fr": "Remplir l’écran",
+                  "nl": "Scherm vullen",
+                  "de": "Bildschirm ausfüllen"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "send_photo_url"
+      }
+    ]
+  },
+  "drivers": [
+    {
+      "name": {
+        "en": "Photo frame",
+        "fr": "Cadre photo",
+        "nl": "Fotolijst",
+        "de": "Bilderrahmen"
+      },
+      "class": "other",
+      "images": {
+        "small": "/drivers/frameo/assets/images/small.png",
+        "large": "/drivers/frameo/assets/images/large.png"
+      },
+      "capabilities": [
+        "measure_frameo_photos",
+        "measure_frameo_videos",
+        "measure_frameo_media",
+        "measure_frameo_visible",
+        "measure_frameo_hidden",
+        "frameo_latest_received",
+        "frameo_last_communication",
+        "frameo_frame_status",
+        "frameo_frame_name",
+        "frameo_frame_placement",
+        "frameo_screen_resolution",
+        "frameo_connection_route",
+        "frameo_granted_permissions",
+        "frameo_status",
+        "frameo_last_sent",
+        "frameo_last_checked",
+        "frameo_name",
+        "frameo_placement",
+        "frameo_resolution",
+        "frameo_connection",
+        "frameo_permissions",
+        "frameo_photo_count",
+        "frameo_video_count",
+        "frameo_media_checked"
+      ],
+      "pair": [
+        {
+          "id": "connect"
+        }
+      ],
+      "repair": [
+        {
+          "id": "repair"
+        }
+      ],
+      "settings": [
+        {
+          "id": "photo_access_mode",
+          "type": "dropdown",
+          "label": {
+            "en": "Use this frame for",
+            "fr": "Utilisation du cadre",
+            "nl": "Deze fotolijst gebruiken voor",
+            "de": "Diesen Bilderrahmen verwenden für"
+          },
+          "value": "send",
+          "values": [
+            {
+              "id": "send",
+              "label": {
+                "en": "Send photos",
+                "fr": "Envoyer des photos",
+                "nl": "Foto’s verzenden",
+                "de": "Fotos senden"
+              }
+            },
+            {
+              "id": "manage",
+              "label": {
+                "en": "Send and manage photos",
+                "fr": "Envoyer et gérer les photos",
+                "nl": "Foto’s verzenden en beheren",
+                "de": "Fotos senden und verwalten"
+              }
+            }
+          ],
+          "hint": {
+            "en": "Gallery access also requires permission in Settings → My friends on the frame.",
+            "fr": "L’accès à la galerie nécessite aussi une autorisation dans Paramètres → Mes amis sur le cadre.",
+            "nl": "Toegang tot de galerij vereist ook toestemming via Instellingen → Mijn vrienden op de fotolijst.",
+            "de": "Für den Galerie-Zugriff ist auch eine Berechtigung unter Einstellungen → Meine Freunde am Bilderrahmen erforderlich."
+          }
+        },
+        {
+          "id": "auto_refresh_enabled",
+          "type": "checkbox",
+          "label": {
+            "en": "Refresh automatically",
+            "fr": "Actualiser automatiquement",
+            "nl": "Automatisch vernieuwen",
+            "de": "Automatisch aktualisieren"
+          },
+          "value": true,
+          "hint": {
+            "en": "Checks the connection and media inventory without downloading photos or videos. Inventory checks require gallery access and permission to view photos.",
+            "fr": "Vérifie la connexion et l’inventaire sans télécharger les photos ou vidéos. L’inventaire nécessite l’accès à la galerie et l’autorisation de consulter les photos.",
+            "nl": "Controleert de verbinding en media-inventaris zonder foto’s of video’s te downloaden. De inventaris vereist toegang tot de galerij en toestemming om foto’s te bekijken.",
+            "de": "Prüft Verbindung und Medienbestand, ohne Fotos oder Videos herunterzuladen. Die Bestandsprüfung erfordert Galerie-Zugriff und die Berechtigung zum Ansehen von Fotos."
+          }
+        },
+        {
+          "id": "auto_refresh_interval",
+          "type": "number",
+          "label": {
+            "en": "Refresh interval",
+            "fr": "Intervalle d’actualisation",
+            "nl": "Vernieuwingsinterval",
+            "de": "Aktualisierungsintervall"
+          },
+          "value": 30,
+          "min": 1,
+          "max": 1440,
+          "step": 1,
+          "units": {
+            "en": "min",
+            "fr": "min",
+            "nl": "min",
+            "de": "min"
+          },
+          "hint": {
+            "en": "New media are detected during checks, not in real time. A Flow action can start a check on demand.",
+            "fr": "Les nouveaux médias sont détectés lors des contrôles, pas en temps réel. Une action Flow permet de lancer un contrôle à la demande.",
+            "nl": "Nieuwe media worden tijdens controles ontdekt, niet in realtime. Met een Flow-actie kun je direct een controle starten.",
+            "de": "Neue Medien werden bei Prüfungen erkannt, nicht in Echtzeit. Eine Flow-Aktion kann bei Bedarf eine Prüfung starten."
+          }
+        },
+        {
+          "id": "sender_name",
+          "type": "text",
+          "label": {
+            "en": "Sender name",
+            "fr": "Nom de l’expéditeur",
+            "nl": "Naam van de afzender",
+            "de": "Absendername"
+          },
+          "value": "Homey",
+          "hint": {
+            "en": "The name shown alongside photos sent by Homey.",
+            "fr": "Le nom affiché avec les photos envoyées par Homey.",
+            "nl": "De naam die bij de door Homey verzonden foto’s wordt getoond.",
+            "de": "Der Name, der bei den von Homey gesendeten Fotos angezeigt wird."
+          }
+        }
+      ],
+      "capabilitiesOptions": {
+        "measure_frameo_photos": {
+          "preventTag": true,
+          "preventInsights": true
+        },
+        "measure_frameo_videos": {
+          "preventTag": true,
+          "preventInsights": true
+        },
+        "measure_frameo_media": {
+          "preventTag": true,
+          "preventInsights": true
+        },
+        "frameo_last_communication": {
+          "preventTag": true,
+          "preventInsights": true
+        },
+        "frameo_frame_status": {
+          "preventTag": true,
+          "preventInsights": true
+        },
+        "frameo_frame_name": {
+          "preventTag": true,
+          "preventInsights": true
+        },
+        "frameo_frame_placement": {
+          "preventTag": true,
+          "preventInsights": true
+        },
+        "frameo_screen_resolution": {
+          "preventTag": true,
+          "preventInsights": true
+        },
+        "frameo_connection_route": {
+          "preventTag": true,
+          "preventInsights": true
+        },
+        "frameo_granted_permissions": {
+          "preventTag": true,
+          "preventInsights": true
+        },
+        "measure_frameo_visible": {
+          "preventTag": true,
+          "preventInsights": true
+        },
+        "measure_frameo_hidden": {
+          "preventTag": true,
+          "preventInsights": true
+        },
+        "frameo_latest_received": {
+          "preventTag": true,
+          "preventInsights": true
+        }
+      },
+      "id": "frameo"
+    }
+  ],
+  "widgets": {
+    "frameo": {
+      "name": {
+        "en": "Frameo photo — Square",
+        "fr": "Photo Frameo — Carré",
+        "nl": "Frameo-foto — Vierkant",
+        "de": "Frameo-Foto — Quadratisch"
+      },
+      "height": "100%",
+      "settings": [
+        {
+          "id": "frame",
+          "type": "autocomplete",
+          "title": {
+            "en": "Photo frame",
+            "fr": "Cadre photo",
+            "nl": "Fotolijst",
+            "de": "Bilderrahmen"
+          },
+          "hint": {
+            "en": "Choose one Frameo frame connected to Homey.",
+            "fr": "Choisissez un cadre Frameo connecté à Homey.",
+            "nl": "Kies een Frameo-fotolijst die met Homey is verbonden.",
+            "de": "Wähle einen mit Homey verbundenen Frameo-Bilderrahmen."
+          }
+        },
+        {
+          "id": "auto_change",
+          "type": "checkbox",
+          "title": {
+            "en": "Change photos automatically",
+            "fr": "Changer automatiquement de photo",
+            "nl": "Foto’s automatisch wisselen",
+            "de": "Fotos automatisch wechseln"
+          },
+          "value": false,
+          "hint": {
+            "en": "Only while this widget is visible. Stops on an error until you try again.",
+            "fr": "Uniquement lorsque ce widget est visible. S’arrête en cas d’erreur jusqu’à votre prochain essai.",
+            "nl": "Alleen zolang deze widget zichtbaar is. Stopt bij een fout totdat je het opnieuw probeert.",
+            "de": "Nur solange dieses Widget sichtbar ist. Stoppt bei einem Fehler, bis du es erneut versuchst."
+          }
+        },
+        {
+          "id": "interval_minutes",
+          "type": "number",
+          "title": {
+            "en": "Change interval (minutes)",
+            "fr": "Intervalle de changement (minutes)",
+            "nl": "Wisselinterval (minuten)",
+            "de": "Wechselintervall (Minuten)"
+          },
+          "value": 5,
+          "min": 1,
+          "max": 1440,
+          "hint": {
+            "en": "1–1440 minutes. Used only when automatic changes are enabled.",
+            "fr": "De 1 à 1440 minutes. Utilisé seulement si le changement automatique est activé.",
+            "nl": "1–1440 minuten. Alleen gebruikt als automatisch wisselen is ingeschakeld.",
+            "de": "1–1440 Minuten. Wird nur bei aktiviertem automatischem Wechsel verwendet."
+          }
+        }
+      ],
+      "api": {
+        "getPhoto": {
+          "method": "GET",
+          "path": "/photo"
+        },
+        "nextPhoto": {
+          "method": "POST",
+          "path": "/next"
+        }
+      },
+      "id": "frameo"
+    },
+    "frameo-compact": {
+      "name": {
+        "en": "Frameo photo — Compact",
+        "fr": "Photo Frameo — Compact",
+        "nl": "Frameo-foto — Compact",
+        "de": "Frameo-Foto — Kompakt"
+      },
+      "height": "65%",
+      "settings": [
+        {
+          "id": "frame",
+          "type": "autocomplete",
+          "title": {
+            "en": "Photo frame",
+            "fr": "Cadre photo",
+            "nl": "Fotolijst",
+            "de": "Bilderrahmen"
+          },
+          "hint": {
+            "en": "Choose one Frameo frame connected to Homey.",
+            "fr": "Choisissez un cadre Frameo connecté à Homey.",
+            "nl": "Kies een Frameo-fotolijst die met Homey is verbonden.",
+            "de": "Wähle einen mit Homey verbundenen Frameo-Bilderrahmen."
+          }
+        },
+        {
+          "id": "auto_change",
+          "type": "checkbox",
+          "title": {
+            "en": "Change photos automatically",
+            "fr": "Changer automatiquement de photo",
+            "nl": "Foto’s automatisch wisselen",
+            "de": "Fotos automatisch wechseln"
+          },
+          "value": false,
+          "hint": {
+            "en": "Only while this widget is visible. Stops on an error until you try again.",
+            "fr": "Uniquement lorsque ce widget est visible. S’arrête en cas d’erreur jusqu’à votre prochain essai.",
+            "nl": "Alleen zolang deze widget zichtbaar is. Stopt bij een fout totdat je het opnieuw probeert.",
+            "de": "Nur solange dieses Widget sichtbar ist. Stoppt bei einem Fehler, bis du es erneut versuchst."
+          }
+        },
+        {
+          "id": "interval_minutes",
+          "type": "number",
+          "title": {
+            "en": "Change interval (minutes)",
+            "fr": "Intervalle de changement (minutes)",
+            "nl": "Wisselinterval (minuten)",
+            "de": "Wechselintervall (Minuten)"
+          },
+          "value": 5,
+          "min": 1,
+          "max": 1440,
+          "hint": {
+            "en": "1–1440 minutes. Used only when automatic changes are enabled.",
+            "fr": "De 1 à 1440 minutes. Utilisé seulement si le changement automatique est activé.",
+            "nl": "1–1440 minuten. Alleen gebruikt als automatisch wisselen is ingeschakeld.",
+            "de": "1–1440 Minuten. Wird nur bei aktiviertem automatischem Wechsel verwendet."
+          }
+        }
+      ],
+      "api": {
+        "getPhoto": {
+          "method": "GET",
+          "path": "/photo"
+        },
+        "nextPhoto": {
+          "method": "POST",
+          "path": "/next"
+        }
+      },
+      "id": "frameo-compact"
+    },
+    "frameo-portrait": {
+      "name": {
+        "en": "Frameo photo — Large portrait",
+        "fr": "Photo Frameo — Grand portrait",
+        "nl": "Frameo-foto — Groot staand",
+        "de": "Frameo-Foto — Großes Hochformat"
+      },
+      "height": "135%",
+      "settings": [
+        {
+          "id": "frame",
+          "type": "autocomplete",
+          "title": {
+            "en": "Photo frame",
+            "fr": "Cadre photo",
+            "nl": "Fotolijst",
+            "de": "Bilderrahmen"
+          },
+          "hint": {
+            "en": "Choose one Frameo frame connected to Homey.",
+            "fr": "Choisissez un cadre Frameo connecté à Homey.",
+            "nl": "Kies een Frameo-fotolijst die met Homey is verbonden.",
+            "de": "Wähle einen mit Homey verbundenen Frameo-Bilderrahmen."
+          }
+        },
+        {
+          "id": "auto_change",
+          "type": "checkbox",
+          "title": {
+            "en": "Change photos automatically",
+            "fr": "Changer automatiquement de photo",
+            "nl": "Foto’s automatisch wisselen",
+            "de": "Fotos automatisch wechseln"
+          },
+          "value": false,
+          "hint": {
+            "en": "Only while this widget is visible. Stops on an error until you try again.",
+            "fr": "Uniquement lorsque ce widget est visible. S’arrête en cas d’erreur jusqu’à votre prochain essai.",
+            "nl": "Alleen zolang deze widget zichtbaar is. Stopt bij een fout totdat je het opnieuw probeert.",
+            "de": "Nur solange dieses Widget sichtbar ist. Stoppt bei einem Fehler, bis du es erneut versuchst."
+          }
+        },
+        {
+          "id": "interval_minutes",
+          "type": "number",
+          "title": {
+            "en": "Change interval (minutes)",
+            "fr": "Intervalle de changement (minutes)",
+            "nl": "Wisselinterval (minuten)",
+            "de": "Wechselintervall (Minuten)"
+          },
+          "value": 5,
+          "min": 1,
+          "max": 1440,
+          "hint": {
+            "en": "1–1440 minutes. Used only when automatic changes are enabled.",
+            "fr": "De 1 à 1440 minutes. Utilisé seulement si le changement automatique est activé.",
+            "nl": "1–1440 minuten. Alleen gebruikt als automatisch wisselen is ingeschakeld.",
+            "de": "1–1440 Minuten. Wird nur bei aktiviertem automatischem Wechsel verwendet."
+          }
+        }
+      ],
+      "api": {
+        "getPhoto": {
+          "method": "GET",
+          "path": "/photo"
+        },
+        "nextPhoto": {
+          "method": "POST",
+          "path": "/next"
+        }
+      },
+      "id": "frameo-portrait"
+    }
+  },
+  "capabilities": {
+    "frameo_connection": {
+      "type": "string",
+      "title": {
+        "en": "Connection",
+        "fr": "Connexion",
+        "nl": "Verbinding",
+        "de": "Verbindung"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/frameo-connection.svg"
+    },
+    "frameo_connection_route": {
+      "type": "string",
+      "title": {
+        "en": "Connection",
+        "fr": "Connexion",
+        "nl": "Verbinding",
+        "de": "Verbindung"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/frameo-connection.svg"
+    },
+    "frameo_frame_name": {
+      "type": "string",
+      "title": {
+        "en": "Frameo name",
+        "fr": "Nom Frameo",
+        "nl": "Frameo-naam",
+        "de": "Frameo-Name"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/frameo-name.svg"
+    },
+    "frameo_frame_placement": {
+      "type": "string",
+      "title": {
+        "en": "Frameo location",
+        "fr": "Emplacement Frameo",
+        "nl": "Frameo-locatie",
+        "de": "Frameo-Standort"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/frameo-placement.svg"
+    },
+    "frameo_frame_status": {
+      "type": "string",
+      "title": {
+        "en": "Frame status",
+        "fr": "État du cadre",
+        "nl": "Status van de fotolijst",
+        "de": "Status des Bilderrahmens"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/frameo-status.svg"
+    },
+    "frameo_granted_permissions": {
+      "type": "string",
+      "title": {
+        "en": "Permissions",
+        "fr": "Autorisations",
+        "nl": "Machtigingen",
+        "de": "Berechtigungen"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/frameo-permissions.svg"
+    },
+    "frameo_last_checked": {
+      "type": "string",
+      "title": {
+        "en": "Last successful check",
+        "fr": "Dernier contrôle",
+        "nl": "Laatste geslaagde controle",
+        "de": "Letzte erfolgreiche Prüfung"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/frameo-last-checked.svg"
+    },
+    "frameo_last_communication": {
+      "type": "string",
+      "title": {
+        "en": "Last communication",
+        "fr": "Dernière communication",
+        "nl": "Laatste communicatie",
+        "de": "Letzte Kommunikation"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/frameo-last-checked.svg"
+    },
+    "frameo_last_sent": {
+      "type": "string",
+      "title": {
+        "en": "Last confirmed send",
+        "fr": "Dernier envoi confirmé",
+        "nl": "Laatste bevestigde verzending",
+        "de": "Letzter bestätigter Versand"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/frameo-last-sent.svg"
+    },
+    "frameo_latest_received": {
+      "type": "string",
+      "title": {
+        "en": "Latest media received",
+        "fr": "Dernier média reçu",
+        "nl": "Laatst ontvangen medium",
+        "de": "Zuletzt empfangenes Medium"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/frameo-latest-received.svg"
+    },
+    "frameo_media_checked": {
+      "type": "string",
+      "title": {
+        "en": "Last media count",
+        "fr": "Dernier comptage",
+        "nl": "Laatste telling",
+        "de": "Letzte Zählung"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/frameo-media-checked.svg"
+    },
+    "frameo_name": {
+      "type": "string",
+      "title": {
+        "en": "Frameo name",
+        "fr": "Nom Frameo",
+        "nl": "Frameo-naam",
+        "de": "Frameo-Name"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/frameo-name.svg"
+    },
+    "frameo_next_photo": {
+      "type": "boolean",
+      "title": {
+        "en": "Another photo",
+        "fr": "Une autre photo",
+        "nl": "Andere foto",
+        "de": "Anderes Foto"
+      },
+      "getable": false,
+      "setable": true,
+      "uiComponent": "button",
+      "icon": "/assets/icons/frameo-random-photo.svg"
+    },
+    "frameo_permissions": {
+      "type": "string",
+      "title": {
+        "en": "Permissions",
+        "fr": "Autorisations",
+        "nl": "Machtigingen",
+        "de": "Berechtigungen"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/frameo-permissions.svg"
+    },
+    "frameo_photo_count": {
+      "type": "number",
+      "title": {
+        "en": "Photos",
+        "fr": "Photos",
+        "nl": "Foto’s",
+        "de": "Fotos"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": null,
+      "min": 0,
+      "step": 1,
+      "decimals": 0,
+      "icon": "/assets/icons/frameo-photo-count.svg"
+    },
+    "frameo_placement": {
+      "type": "string",
+      "title": {
+        "en": "Frameo location",
+        "fr": "Emplacement Frameo",
+        "nl": "Frameo-locatie",
+        "de": "Frameo-Standort"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/frameo-placement.svg"
+    },
+    "frameo_refresh": {
+      "type": "boolean",
+      "title": {
+        "en": "Refresh",
+        "fr": "Actualiser",
+        "nl": "Vernieuwen",
+        "de": "Aktualisieren"
+      },
+      "getable": false,
+      "setable": true,
+      "uiComponent": "button",
+      "icon": "/assets/icons/frameo-refresh.svg"
+    },
+    "frameo_request_manage": {
+      "type": "boolean",
+      "title": {
+        "en": "Request photo management",
+        "fr": "Demander la gestion",
+        "nl": "Fotobeheer aanvragen",
+        "de": "Fotoverwaltung anfragen"
+      },
+      "getable": false,
+      "setable": true,
+      "uiComponent": "button",
+      "icon": "/assets/icons/frameo-permissions.svg"
+    },
+    "frameo_request_view": {
+      "type": "boolean",
+      "title": {
+        "en": "Request photo access",
+        "fr": "Demander la consultation",
+        "nl": "Fototoegang aanvragen",
+        "de": "Fotozugriff anfragen"
+      },
+      "getable": false,
+      "setable": true,
+      "uiComponent": "button",
+      "icon": "/assets/icons/frameo-permissions.svg"
+    },
+    "frameo_resolution": {
+      "type": "string",
+      "title": {
+        "en": "Screen",
+        "fr": "Écran",
+        "nl": "Scherm",
+        "de": "Bildschirm"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/frameo-resolution.svg"
+    },
+    "frameo_screen_resolution": {
+      "type": "string",
+      "title": {
+        "en": "Screen",
+        "fr": "Écran",
+        "nl": "Scherm",
+        "de": "Bildschirm"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/frameo-resolution.svg"
+    },
+    "frameo_status": {
+      "type": "string",
+      "title": {
+        "en": "Frame status",
+        "fr": "État du cadre",
+        "nl": "Status van de fotolijst",
+        "de": "Status des Bilderrahmens"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/frameo-status.svg"
+    },
+    "frameo_video_count": {
+      "type": "number",
+      "title": {
+        "en": "Videos",
+        "fr": "Vidéos",
+        "nl": "Video’s",
+        "de": "Videos"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": null,
+      "min": 0,
+      "step": 1,
+      "decimals": 0,
+      "icon": "/assets/icons/frameo-video-count.svg"
+    },
+    "measure_frameo_hidden": {
+      "type": "number",
+      "title": {
+        "en": "Hidden media",
+        "fr": "Médias masqués",
+        "nl": "Verborgen media",
+        "de": "Ausgeblendete Medien"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "min": 0,
+      "step": 1,
+      "decimals": 0,
+      "icon": "/assets/icons/frameo-hidden-count.svg"
+    },
+    "measure_frameo_media": {
+      "type": "number",
+      "title": {
+        "en": "Total media",
+        "fr": "Médias au total",
+        "nl": "Media in totaal",
+        "de": "Medien insgesamt"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "min": 0,
+      "step": 1,
+      "decimals": 0,
+      "icon": "/assets/icons/frameo-media-count.svg"
+    },
+    "measure_frameo_photos": {
+      "type": "number",
+      "title": {
+        "en": "Photos",
+        "fr": "Photos",
+        "nl": "Foto’s",
+        "de": "Fotos"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "min": 0,
+      "step": 1,
+      "decimals": 0,
+      "icon": "/assets/icons/frameo-photo-count.svg"
+    },
+    "measure_frameo_videos": {
+      "type": "number",
+      "title": {
+        "en": "Videos",
+        "fr": "Vidéos",
+        "nl": "Video’s",
+        "de": "Videos"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "min": 0,
+      "step": 1,
+      "decimals": 0,
+      "icon": "/assets/icons/frameo-video-count.svg"
+    },
+    "measure_frameo_visible": {
+      "type": "number",
+      "title": {
+        "en": "Included in slideshow",
+        "fr": "Inclus dans le diaporama",
+        "nl": "Opgenomen in diavoorstelling",
+        "de": "In Diashow enthalten"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "min": 0,
+      "step": 1,
+      "decimals": 0,
+      "icon": "/assets/icons/frameo-slideshow-count.svg"
+    }
+  }
+}

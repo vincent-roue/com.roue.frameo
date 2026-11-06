@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <link rel="stylesheet" href="widget.css">
+  <script>
+    function onHomeyReady(Homey) {
+      function start() {
+        if (window.frameoWidget) return;
+        window.frameoWidget = window.FrameoWidget.create({ Homey: Homey, document: document, window: window, format: 'portrait' });
+        window.frameoWidget.init();
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+      else start();
+    }
+  </script>
+</head>
+<body class="homey-widget-full">
+  <main id="widget" class="frameo-widget" aria-label="Frameo">
+    <header class="widget-header">
+      <span class="brand" role="img" aria-label="Frameo"></span>
+      <span id="frame-name" class="frame-name"></span>
+    </header>
+    <section id="photo-stage" class="photo-stage" aria-busy="true">
+      <img id="photo" class="photo" alt="" hidden>
+      <div id="state" class="state" role="status" aria-live="polite">
+        <svg class="state-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="6" width="30" height="28" rx="4"/><circle cx="14" cy="15" r="2.5"/><path d="m7 29 9-9 6 6 4-4 7 7"/></svg>
+        <p id="state-title" class="state-title"></p>
+        <p id="state-hint" class="state-hint"></p>
+      </div>
+    </section>
+    <footer class="widget-footer">
+      <button id="next-photo" class="next-photo" type="button" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h3c5 0 7 10 12 10h3m-4-4 4 4-4 4M3 17h3c2 0 3.5-1.7 5-4m2-2c1.5-2.3 3-4 5-4h3m-4-4 4 4-4 4"/></svg>
+        <span id="next-label">Change photo</span>
+      </button>
+    </footer>
+  </main>
+  <script src="widget.js"></script>
+</body>
+</html>

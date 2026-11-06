@@ -1,0 +1,13 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Last confirmed send",
+    "fr": "Dernier envoi confirmé",
+    "nl": "Laatste bevestigde verzending",
+    "de": "Letzter bestätigter Versand"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": null,
+  "icon": "/assets/icons/frameo-last-sent.svg"
+}

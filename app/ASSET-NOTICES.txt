@@ -1,0 +1,6 @@
+Frameo is a trademark of Frameo A/S. This community integration is not the official Frameo mobile application.
+
+The app icon uses the official Frameo hands symbol, extracted from the official SVG without changing its geometry and converted to monochrome for Homey's icon format. The onboarding wordmark uses the original official letter paths. The add-friend pictogram comes from the official Frameo help center. Brand artwork remains the property of its owner; the source-code GPL notice does not relicense the Frameo trademark or artwork.
+Sources: https://www.frameo.com/assets/img/logo.svg and the official Frameo help article “How to Connect Phone to a Frame”.
+
+QR decoding uses jsQR 1.4.0, Copyright 2017 Cozmo Inc., Apache License 2.0. The full notice is included in drivers/frameo/pair/vendor/jsQR.LICENSE.txt. The decoder is bundled and does not contact a CDN or upload a QR photograph.

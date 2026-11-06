@@ -1,0 +1,13 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Last successful check",
+    "fr": "Dernier contrôle",
+    "nl": "Laatste geslaagde controle",
+    "de": "Letzte erfolgreiche Prüfung"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": null,
+  "icon": "/assets/icons/frameo-last-checked.svg"
+}

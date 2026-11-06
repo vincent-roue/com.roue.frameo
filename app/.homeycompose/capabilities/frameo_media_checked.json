@@ -1,0 +1,13 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Last media count",
+    "fr": "Dernier comptage",
+    "nl": "Laatste telling",
+    "de": "Letzte Zählung"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": null,
+  "icon": "/assets/icons/frameo-media-checked.svg"
+}

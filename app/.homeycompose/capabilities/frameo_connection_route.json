@@ -1,0 +1,13 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Connection",
+    "fr": "Connexion",
+    "nl": "Verbinding",
+    "de": "Verbindung"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/icons/frameo-connection.svg"
+}

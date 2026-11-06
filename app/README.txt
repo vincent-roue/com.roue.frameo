@@ -1,0 +1,3 @@
+Send photos from Homey Pro to a Frameo frame or a group of frames. Pick JPEG or PNG files up to 8 MiB each on your phone, or use a URL or image tag in a Flow. Browse the gallery and add a photo preview to your dashboard. Inventory checks update the counters and detect new media without downloading the files.
+
+This independent community beta targets Homey Pro (2023) and requires Homey software 12.9.0 or later. It was tested with a Pexar frame. Compatibility with other models remains to be confirmed. Pair the frame using its friend code. For the gallery, widgets and counters, enable viewing in the app and give the Homey sender permission to view photos under Settings → My friends on the frame. Photo management requires an additional permission.

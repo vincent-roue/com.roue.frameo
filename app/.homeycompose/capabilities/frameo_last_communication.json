@@ -1,0 +1,13 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Last communication",
+    "fr": "Dernière communication",
+    "nl": "Laatste communicatie",
+    "de": "Letzte Kommunikation"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/icons/frameo-last-checked.svg"
+}

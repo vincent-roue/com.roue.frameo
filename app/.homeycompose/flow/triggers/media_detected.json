@@ -1,0 +1,89 @@
+{
+  "title": {
+    "en": "A new media item was detected",
+    "fr": "Un nouveau média a été détecté",
+    "nl": "Een nieuw mediabestand is ontdekt",
+    "de": "Ein neues Medium wurde erkannt"
+  },
+  "hint": {
+    "en": "Detects a new media ID during an inventory check, without downloading the file. The first successful inventory establishes a baseline and does not trigger this Flow.",
+    "fr": "Signale un nouvel identifiant de média lors d’un inventaire, sans télécharger le fichier. Le premier inventaire réussi sert de référence et ne déclenche pas ce Flow.",
+    "nl": "Meldt een nieuw media-ID tijdens een inventariscontrole, zonder het bestand te downloaden. De eerste geslaagde inventaris vormt de beginstand en activeert deze Flow niet.",
+    "de": "Meldet bei einer Bestandsprüfung eine neue Medien-ID, ohne die Datei herunterzuladen. Die erste erfolgreiche Bestandsprüfung bildet die Ausgangsbasis und löst diesen Flow nicht aus."
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=frameo"
+    }
+  ],
+  "tokens": [
+    {
+      "name": "media_id",
+      "type": "string",
+      "title": {
+        "en": "Media ID",
+        "fr": "Identifiant du média",
+        "nl": "Media-ID",
+        "de": "Medien-ID"
+      },
+      "example": "123456789"
+    },
+    {
+      "name": "type",
+      "type": "string",
+      "title": {
+        "en": "Media type",
+        "fr": "Type de média",
+        "nl": "Mediatype",
+        "de": "Medientyp"
+      },
+      "example": "photo"
+    },
+    {
+      "name": "received_at",
+      "type": "string",
+      "title": {
+        "en": "Received at (if known)",
+        "fr": "Réception (si connue)",
+        "nl": "Ontvangen op (indien bekend)",
+        "de": "Empfangen am (falls bekannt)"
+      },
+      "example": "2026-11-04T12:00:00Z"
+    },
+    {
+      "name": "detected_at",
+      "type": "string",
+      "title": {
+        "en": "Inventory check time",
+        "fr": "Date du contrôle",
+        "nl": "Tijdstip van de inventariscontrole",
+        "de": "Zeitpunkt der Bestandsprüfung"
+      },
+      "example": "2026-11-04T12:30:00Z"
+    },
+    {
+      "name": "new_count",
+      "type": "number",
+      "title": {
+        "en": "New media in this check",
+        "fr": "Nouveaux médias lors de ce contrôle",
+        "nl": "Nieuwe media bij deze controle",
+        "de": "Neue Medien bei dieser Prüfung"
+      },
+      "example": 3
+    },
+    {
+      "name": "events_truncated",
+      "type": "boolean",
+      "title": {
+        "en": "Flow detections limited",
+        "fr": "Détections Flow limitées",
+        "nl": "Flow-detecties beperkt",
+        "de": "Flow-Erkennungen begrenzt"
+      },
+      "example": false
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Request photo access",
+    "fr": "Demander la consultation",
+    "nl": "Fototoegang aanvragen",
+    "de": "Fotozugriff anfragen"
+  },
+  "getable": false,
+  "setable": true,
+  "uiComponent": "button",
+  "icon": "/assets/icons/frameo-permissions.svg"
+}

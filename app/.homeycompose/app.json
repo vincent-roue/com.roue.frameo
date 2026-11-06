@@ -1,0 +1,147 @@
+{
+  "id": "com.roue.frameo",
+  "version": "0.13.1",
+  "compatibility": ">=12.9.0",
+  "sdk": 3,
+  "runtime": "nodejs",
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Frameo",
+    "fr": "Frameo",
+    "nl": "Frameo",
+    "de": "Frameo"
+  },
+  "description": {
+    "en": "Memories for your photo frame",
+    "fr": "Des souvenirs pour vos cadres photo",
+    "nl": "Herinneringen voor je fotolijst",
+    "de": "Erinnerungen für deinen Bilderrahmen"
+  },
+  "category": [
+    "video"
+  ],
+  "brandColor": "#FF2A3A",
+  "author": {
+    "name": "Vincent Roué"
+  },
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "api": {
+    "status": {
+      "method": "GET",
+      "path": "/status"
+    },
+    "refresh": {
+      "method": "POST",
+      "path": "/refresh"
+    },
+    "sendUrl": {
+      "method": "POST",
+      "path": "/send-url"
+    },
+    "requestPermission": {
+      "method": "POST",
+      "path": "/request-permission"
+    },
+    "galleryFrames": {
+      "method": "GET",
+      "path": "/gallery/frames"
+    },
+    "galleryList": {
+      "method": "POST",
+      "path": "/gallery/list"
+    },
+    "galleryPreview": {
+      "method": "POST",
+      "path": "/gallery/preview"
+    },
+    "galleryDelete": {
+      "method": "POST",
+      "path": "/gallery/delete"
+    },
+    "galleryMode": {
+      "method": "POST",
+      "path": "/gallery/mode"
+    },
+    "galleryCheckAccess": {
+      "method": "POST",
+      "path": "/gallery/check-access"
+    },
+    "galleryVisibility": {
+      "method": "POST",
+      "path": "/gallery/visibility"
+    },
+    "groupsList": {
+      "method": "GET",
+      "path": "/groups"
+    },
+    "groupsSave": {
+      "method": "POST",
+      "path": "/groups/save"
+    },
+    "groupsDelete": {
+      "method": "POST",
+      "path": "/groups/delete"
+    },
+    "transfersStart": {
+      "method": "POST",
+      "path": "/transfers/start"
+    },
+    "transfersManual": {
+      "method": "POST",
+      "path": "/transfers/manual"
+    },
+    "transfersJob": {
+      "method": "GET",
+      "path": "/transfers/job"
+    },
+    "transfersHistory": {
+      "method": "GET",
+      "path": "/transfers/history"
+    },
+    "transfersClear": {
+      "method": "POST",
+      "path": "/transfers/clear"
+    },
+    "transfersFinish": {
+      "method": "POST",
+      "path": "/transfers/finish"
+    },
+    "uploadsStart": {
+      "method": "POST",
+      "path": "/uploads/start"
+    },
+    "uploadsChunk": {
+      "method": "POST",
+      "path": "/uploads/chunk"
+    },
+    "uploadsFinish": {
+      "method": "POST",
+      "path": "/uploads/finish"
+    },
+    "uploadsAbort": {
+      "method": "POST",
+      "path": "/uploads/abort"
+    },
+    "diagnostics": {
+      "method": "GET",
+      "path": "/diagnostics"
+    }
+  },
+  "contributors": {
+    "developers": [
+      {
+        "name": "Borje Granberg"
+      },
+      {
+        "name": "Pavel Fedin"
+      }
+    ]
+  }
+}

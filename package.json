@@ -1,0 +1,17 @@
+{
+  "name": "frameo-homey-source",
+  "version": "0.13.1",
+  "private": true,
+  "license": "GPL-3.0-or-later",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build.cjs --publish",
+    "test": "node --test app/tests/*.test.js",
+    "assets": "node scripts/assets.cjs"
+  },
+  "devDependencies": {
+    "homey": "4.6.0"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "title": {
+    "en": "A photo was received",
+    "fr": "Une photo a été reçue",
+    "nl": "Een foto is ontvangen",
+    "de": "Ein Foto wurde empfangen"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=frameo"
+    }
+  ],
+  "tokens": [
+    {
+      "name": "received_at",
+      "type": "string",
+      "title": {
+        "en": "Received at",
+        "fr": "Date de réception",
+        "nl": "Ontvangen op",
+        "de": "Empfangen am"
+      },
+      "example": "2026-11-03T12:00:00Z"
+    }
+  ]
+}

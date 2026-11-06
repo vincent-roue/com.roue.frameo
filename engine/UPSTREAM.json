@@ -1,0 +1,17 @@
+{
+  "repository": "https://github.com/borje/unframeo",
+  "revision": "149f60b5ac7702f2cbb0761185b0d49a7431bf3f",
+  "license": "GPL-3.0-or-later",
+  "sourceDirectory": "vendor/unframeo",
+  "localAdditions": [
+    "cmd/homey-frameo/main.go",
+    "cmd/homey-frameo/main_test.go"
+  ],
+  "modifiedUpstreamFiles": ["go.mod", "go.sum"],
+  "build": {
+    "toolchain": "go1.27.3",
+    "runtimeTarget": "linux/arm64",
+    "CGO_ENABLED": "0",
+    "flags": ["-trimpath", "-buildvcs=false", "-ldflags=-s -w"]
+  }
+}

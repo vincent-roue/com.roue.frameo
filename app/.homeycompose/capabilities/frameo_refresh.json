@@ -1,0 +1,13 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Refresh",
+    "fr": "Actualiser",
+    "nl": "Vernieuwen",
+    "de": "Aktualisieren"
+  },
+  "getable": false,
+  "setable": true,
+  "uiComponent": "button",
+  "icon": "/assets/icons/frameo-refresh.svg"
+}

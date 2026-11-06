@@ -1,0 +1,13 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Latest media received",
+    "fr": "Dernier média reçu",
+    "nl": "Laatst ontvangen medium",
+    "de": "Zuletzt empfangenes Medium"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/icons/frameo-latest-received.svg"
+}

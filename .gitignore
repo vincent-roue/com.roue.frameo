@@ -1,0 +1,8 @@
+node_modules/
+app/.homeybuild/
+build.safe.json
+frameo-*-local.tar.gz
+toolchain/
+engine/build/
+*.private.*
+.env

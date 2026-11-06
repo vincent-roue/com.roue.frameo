@@ -1,0 +1,73 @@
+{
+  "name": {
+    "en": "Frameo photo — Large portrait",
+    "fr": "Photo Frameo — Grand portrait",
+    "nl": "Frameo-foto — Groot staand",
+    "de": "Frameo-Foto — Großes Hochformat"
+  },
+  "height": "135%",
+  "settings": [
+    {
+      "id": "frame",
+      "type": "autocomplete",
+      "title": {
+        "en": "Photo frame",
+        "fr": "Cadre photo",
+        "nl": "Fotolijst",
+        "de": "Bilderrahmen"
+      },
+      "hint": {
+        "en": "Choose one Frameo frame connected to Homey.",
+        "fr": "Choisissez un cadre Frameo connecté à Homey.",
+        "nl": "Kies een Frameo-fotolijst die met Homey is verbonden.",
+        "de": "Wähle einen mit Homey verbundenen Frameo-Bilderrahmen."
+      }
+    },
+    {
+      "id": "auto_change",
+      "type": "checkbox",
+      "title": {
+        "en": "Change photos automatically",
+        "fr": "Changer automatiquement de photo",
+        "nl": "Foto’s automatisch wisselen",
+        "de": "Fotos automatisch wechseln"
+      },
+      "value": false,
+      "hint": {
+        "en": "Only while this widget is visible. Stops on an error until you try again.",
+        "fr": "Uniquement lorsque ce widget est visible. S’arrête en cas d’erreur jusqu’à votre prochain essai.",
+        "nl": "Alleen zolang deze widget zichtbaar is. Stopt bij een fout totdat je het opnieuw probeert.",
+        "de": "Nur solange dieses Widget sichtbar ist. Stoppt bei einem Fehler, bis du es erneut versuchst."
+      }
+    },
+    {
+      "id": "interval_minutes",
+      "type": "number",
+      "title": {
+        "en": "Change interval (minutes)",
+        "fr": "Intervalle de changement (minutes)",
+        "nl": "Wisselinterval (minuten)",
+        "de": "Wechselintervall (Minuten)"
+      },
+      "value": 5,
+      "min": 1,
+      "max": 1440,
+      "hint": {
+        "en": "1–1440 minutes. Used only when automatic changes are enabled.",
+        "fr": "De 1 à 1440 minutes. Utilisé seulement si le changement automatique est activé.",
+        "nl": "1–1440 minuten. Alleen gebruikt als automatisch wisselen is ingeschakeld.",
+        "de": "1–1440 Minuten. Wird nur bei aktiviertem automatischem Wechsel verwendet."
+      }
+    }
+  ],
+  "api": {
+    "getPhoto": {
+      "method": "GET",
+      "path": "/photo"
+    },
+    "nextPhoto": {
+      "method": "POST",
+      "path": "/next"
+    }
+  }
+}

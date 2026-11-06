@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <script>
+    function onHomeyReady(Homey) {
+      function startGallery() {
+        if (window.frameoSettings) return;
+        window.frameoGallery = window.FrameoGallery.create({ Homey: Homey, document: document, window: window, active: false });
+        window.frameoSettings = window.FrameoSettings.create({ Homey: Homey, document: document, window: window, gallery: window.frameoGallery });
+        window.frameoGallery.init();
+        window.frameoSettings.init();
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startGallery, { once: true });
+      else startGallery();
+    }
+  </script>
+  <script src="/homey.js" data-origin="settings"></script>
+  <link rel="stylesheet" href="gallery.css" data-frameo-inline>
+</head>
+<body>
+<main class="gallery-page" id="gallery-page">
+  <header class="gallery-header">
+    <img class="brand-logo" src="../assets/brand/frameo-wordmark.svg" alt="Frameo" width="122" height="33" data-frameo-asset>
+    <h1 data-app-i18n="title">Your frame, your way</h1>
+    <p class="subtitle" data-app-i18n="intro">Send your photos, revisit your memories and choose where to share them.</p>
+  </header>
+  <nav class="settings-tabs" role="tablist" aria-label="Frameo">
+    <button id="tab-send" type="button" role="tab" aria-selected="true" aria-controls="panel-send" data-app-i18n="tab_send">Send</button>
+    <button id="tab-gallery" type="button" role="tab" aria-selected="false" aria-controls="panel-gallery" data-app-i18n="tab_gallery">Gallery</button>
+    <button id="tab-groups" type="button" role="tab" aria-selected="false" aria-controls="panel-groups" data-app-i18n="tab_groups">Groups</button>
+    <button id="tab-activity" type="button" role="tab" aria-selected="false" aria-controls="panel-activity" data-app-i18n="tab_activity">Activity</button>
+  </nav>
+  <p id="app-error" class="gallery-error" role="alert" hidden></p>
+  <section id="panel-send" role="tabpanel" aria-labelledby="tab-send">
+    <h2 data-app-i18n="send_title">A memory to share</h2><p class="subtitle panel-intro" data-app-i18n="send_intro"></p>
+    <form id="send-form" novalidate>
+      <label class="field-label" for="send-target" data-app-i18n="target">Recipient</label><select id="send-target" required></select>
+      <p id="send-target-hint" class="quiet"></p>
+      <div class="file-picker"><input id="send-files" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple><label class="secondary-button file-picker-label" for="send-files" data-app-i18n="add_photos">Choose photos</label><p class="quiet" data-app-i18n="file_hint"></p></div>
+      <ol id="send-selection" class="send-selection"></ol><p id="send-empty" class="empty-selection" data-app-i18n="empty_queue"></p>
+      <div class="selection-footer"><span id="send-count" class="quiet"></span><button id="send-clear" type="button" class="text-button" data-app-i18n="clear_selection">Clear selection</button></div>
+      <label class="field-label" for="send-url" data-app-i18n="url_label"></label><div class="url-controls"><input id="send-url" type="url" inputmode="url" autocomplete="off" placeholder="https://"><button id="send-add-url" type="button" class="secondary-button" data-app-i18n="url_add"></button></div><p class="quiet" data-app-i18n="url_hint"></p>
+      <label class="field-label" for="send-caption" data-app-i18n="caption"></label><textarea id="send-caption" rows="2" maxlength="1000"></textarea>
+      <label class="check-label"><input id="send-fit" type="checkbox"><span data-app-i18n="fit"></span></label><p class="quiet" data-app-i18n="fit_hint"></p>
+      <p id="send-error" class="form-error" role="alert"></p>
+      <button id="send-submit" type="submit" class="primary-button" data-app-i18n="send_start"></button>
+    </form>
+    <section id="send-progress" class="progress-panel" aria-live="polite" hidden><h3 id="send-progress-title"></h3><p id="send-progress-text"></p><progress id="send-meter" value="0" max="1"></progress><p id="send-keep-open" class="notice" data-app-i18n="keep_open"></p><button id="send-stop" type="button" class="secondary-button" data-app-i18n="send_stop"></button></section>
+    <div id="send-results" class="send-results" aria-live="polite"></div>
+    <aside class="discover-panel"><h3 data-app-i18n="learn_title"></h3><p data-app-i18n="widget_hint"></p><p data-app-i18n="flows_hint"></p></aside>
+  </section>
+  <section id="panel-gallery" role="tabpanel" aria-labelledby="tab-gallery" hidden>
+
+  <section class="frame-panel" aria-labelledby="frame-label">
+    <label id="frame-label" for="frame-selector" data-gallery-i18n="frame_label">Photo frame</label>
+    <div class="frame-controls">
+      <select id="frame-selector" disabled></select>
+      <button id="refresh" class="icon-button" type="button" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 7a7 7 0 0 1 11.6-1L20 9M4 15l2.3 3A7 7 0 0 0 17.9 17"/></svg>
+        <span data-gallery-i18n="refresh">Refresh</span>
+      </button>
+    </div>
+    <div class="frame-detail"><span id="access-badge" class="access-badge" hidden></span><span id="friend-name"></span></div>
+  </section>
+
+  <section id="permission-panel" class="permission-panel" hidden aria-labelledby="permission-title">
+    <span class="panel-icon" aria-hidden="true">⌑</span>
+    <h2 id="permission-title"></h2>
+    <p id="permission-intro"></p>
+    <ol id="permission-steps" hidden>
+      <li data-gallery-i18n="permission_step_frame">On the frame, open Settings → My friends.</li>
+      <li id="permission-step-friend"></li>
+      <li data-gallery-i18n="permission_step_access">Check permission to view photos. Managing photos also allows deletion.</li>
+      <li data-gallery-i18n="permission_step_check">Then return here to check access.</li>
+    </ol>
+    <button id="enable-gallery" class="primary-button" type="button" hidden data-gallery-i18n="enable">Enable gallery</button>
+    <p class="quiet" data-gallery-i18n="permission_no_popup">Permissions belong to this Homey connection. Nothing is requested automatically on the frame.</p>
+  </section>
+  <button id="check-access" class="secondary-button access-check" type="button" hidden data-gallery-i18n="check_access">Check permissions</button>
+
+  <section id="gallery-section" class="gallery-section" hidden aria-labelledby="photos-heading">
+    <div class="section-heading"><h2 id="photos-heading" data-gallery-i18n="photos">Photos</h2><span id="photo-count" class="quiet"></span></div>
+    <div class="gallery-filters">
+      <label><span data-gallery-i18n="filter_type"></span><select id="filter-type"><option value="all" data-gallery-i18n="filter_all"></option><option value="photo" data-gallery-i18n="filter_photos"></option><option value="video" data-gallery-i18n="filter_videos"></option><option value="greeting" data-gallery-i18n="filter_greetings"></option></select></label>
+      <label><span data-gallery-i18n="filter_visibility"></span><select id="filter-visibility"><option value="all" data-gallery-i18n="filter_all"></option><option value="visible" data-gallery-i18n="filter_visible"></option><option value="hidden" data-gallery-i18n="filter_hidden"></option></select></label>
+      <label><span data-gallery-i18n="filter_sort"></span><select id="filter-sort"><option value="received_desc" data-gallery-i18n="sort_received_desc"></option><option value="received_asc" data-gallery-i18n="sort_received_asc"></option><option value="captured_desc" data-gallery-i18n="sort_captured_desc"></option><option value="captured_asc" data-gallery-i18n="sort_captured_asc"></option></select></label>
+    </div>
+    <p id="read-only-note" class="notice" hidden data-gallery-i18n="read_only">You can view these photos. Deleting them also requires permission to manage photos.</p>
+    <div id="photo-grid" class="photo-grid" aria-busy="false"></div>
+    <div id="empty-state" class="empty-state" hidden><span aria-hidden="true">▧</span><h3 data-gallery-i18n="empty_title">A little space for new memories</h3><p data-gallery-i18n="empty">There are no photos to display on this frame.</p></div>
+    <nav id="pagination" class="pagination" hidden aria-label="Pages">
+      <button id="previous-page" class="secondary-button" type="button" disabled data-gallery-i18n="previous">Previous</button>
+      <span id="page-label"></span>
+      <button id="next-page" class="secondary-button" type="button" disabled data-gallery-i18n="next">Next</button>
+    </nav>
+  </section>
+
+  <p id="gallery-status" class="gallery-status" role="status" aria-live="polite"></p>
+  <p id="gallery-error" class="gallery-error" role="alert" hidden></p>
+  <button id="disable-gallery" class="text-button" type="button" hidden data-gallery-i18n="disable">Use sending only</button>
+  <footer class="privacy-note" data-gallery-i18n="privacy">Only the previews shown are loaded. They are kept temporarily for display.</footer>
+  </section>
+  <section id="panel-groups" role="tabpanel" aria-labelledby="tab-groups" hidden>
+    <h2 data-app-i18n="group_title"></h2><p class="subtitle panel-intro" data-app-i18n="group_intro"></p>
+    <div id="group-list" class="group-list"></div>
+    <form id="group-form" class="group-editor" novalidate><h3 id="group-editor-title" data-app-i18n="group_new"></h3><label class="field-label" for="group-name" data-app-i18n="group_name"></label><input id="group-name" type="text" maxlength="80" autocomplete="off" required><fieldset class="group-members"><legend data-app-i18n="group_members"></legend><div id="group-members"></div></fieldset><p id="group-status" role="status"></p><p id="group-error" class="form-error" role="alert"></p><div class="editor-actions"><button id="group-save" class="primary-button" type="submit" data-app-i18n="group_save"></button><button id="group-new" class="secondary-button" type="button" data-app-i18n="group_new"></button></div></form>
+    <section id="group-remove-panel" class="notice" hidden><p data-app-i18n="group_remove_hint"></p><button id="group-remove-confirm" class="danger-button" type="button" data-app-i18n="group_confirm"></button><button id="group-remove-cancel" class="secondary-button" type="button" data-app-i18n="group_cancel"></button></section>
+  </section>
+  <section id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" hidden>
+    <h2 data-app-i18n="activity_title"></h2><p class="subtitle panel-intro" data-app-i18n="activity_intro"></p><div class="editor-actions"><button id="activity-refresh" class="secondary-button" type="button" data-app-i18n="activity_refresh"></button><button id="activity-clear" class="text-button" type="button" data-app-i18n="activity_clear"></button></div><p class="quiet" data-app-i18n="activity_clear_hint"></p><p id="activity-error" class="form-error" role="alert"></p><div id="activity-list" class="activity-list"></div><p id="activity-empty" class="empty-selection" data-app-i18n="activity_empty"></p>
+    <section class="discover-panel" aria-labelledby="diagnostic-title">
+      <h3 id="diagnostic-title" data-app-i18n="diagnostic_title"></h3>
+      <p data-app-i18n="diagnostic_intro"></p>
+      <p class="quiet" data-app-i18n="diagnostic_privacy"></p>
+      <button id="diagnostic-load" class="secondary-button" type="button" data-app-i18n="diagnostic_generate"></button>
+      <p id="diagnostic-status" role="status" aria-live="polite"></p>
+      <p id="diagnostic-error" class="form-error" role="alert"></p>
+      <div id="diagnostic-preview" hidden>
+        <p id="diagnostic-summary" class="quiet"></p>
+        <label class="field-label" for="diagnostic-json" data-app-i18n="diagnostic_preview"></label>
+        <textarea id="diagnostic-json" rows="14" wrap="off" readonly spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+        <div class="editor-actions">
+          <button id="diagnostic-download" class="secondary-button" type="button" data-app-i18n="diagnostic_download"></button>
+          <button id="diagnostic-copy" class="secondary-button" type="button" data-app-i18n="diagnostic_copy"></button>
+        </div>
+        <p class="quiet" data-app-i18n="diagnostic_copy_hint"></p>
+      </div>
+    </section>
+  </section>
+</main>
+
+<section id="photo-dialog" class="photo-dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title" hidden>
+  <div class="dialog-panel">
+    <header class="dialog-header"><div><p class="eyebrow" data-gallery-i18n="on_frame">On this frame</p><h2 id="dialog-title"></h2></div><button id="dialog-close" class="close-button" type="button" aria-label="Close">×</button></header>
+    <div class="dialog-image-wrap"><img id="dialog-image" alt="" hidden><p id="dialog-preview-status" role="status"></p></div>
+    <p id="dialog-details" class="quiet"></p>
+    <p id="delete-warning" class="delete-warning" hidden data-gallery-i18n="delete_warning">This permanently deletes this photo from the selected frame. It cannot be undone.</p>
+    <p id="dialog-read-only" class="notice" hidden data-gallery-i18n="read_only">You can view these photos. Deleting them also requires permission to manage photos.</p>
+    <p id="dialog-status" class="dialog-status" role="status" aria-live="polite"></p>
+    <div class="dialog-actions"><button id="dialog-cancel" class="secondary-button" type="button" data-gallery-i18n="keep">Keep photo</button><button id="toggle-visibility" class="secondary-button" type="button" disabled hidden></button><button id="delete-photo" class="danger-button" type="button" disabled data-gallery-i18n="delete">Permanently delete</button></div>
+  </div>
+</section>
+<script src="gallery.js" data-frameo-inline></script>
+<script src="settings-i18n.js" data-frameo-inline></script>
+<script src="diagnostic-report.js" data-frameo-inline></script>
+<script src="app-ui.js" data-frameo-inline></script>
+</body>
+</html>

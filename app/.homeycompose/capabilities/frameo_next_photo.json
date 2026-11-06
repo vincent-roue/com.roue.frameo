@@ -1,0 +1,13 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Another photo",
+    "fr": "Une autre photo",
+    "nl": "Andere foto",
+    "de": "Anderes Foto"
+  },
+  "getable": false,
+  "setable": true,
+  "uiComponent": "button",
+  "icon": "/assets/icons/frameo-random-photo.svg"
+}

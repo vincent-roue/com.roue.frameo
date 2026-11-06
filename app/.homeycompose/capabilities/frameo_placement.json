@@ -1,0 +1,13 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Frameo location",
+    "fr": "Emplacement Frameo",
+    "nl": "Frameo-locatie",
+    "de": "Frameo-Standort"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": null,
+  "icon": "/assets/icons/frameo-placement.svg"
+}
