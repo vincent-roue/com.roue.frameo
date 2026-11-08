@@ -44,6 +44,7 @@
       <label class="field-label" for="send-url" data-app-i18n="url_label"></label><div class="url-controls"><input id="send-url" type="url" inputmode="url" autocomplete="off" placeholder="https://"><button id="send-add-url" type="button" class="secondary-button" data-app-i18n="url_add"></button></div><p class="quiet" data-app-i18n="url_hint"></p>
       <label class="field-label" for="send-caption" data-app-i18n="caption"></label><textarea id="send-caption" rows="2" maxlength="1000"></textarea>
       <label class="check-label"><input id="send-fit" type="checkbox"><span data-app-i18n="fit"></span></label><p class="quiet" data-app-i18n="fit_hint"></p>
+      <label class="check-label"><input id="send-defer" type="checkbox" aria-describedby="send-defer-hint"><span data-app-i18n="defer_send"></span></label><p id="send-defer-hint" class="quiet" data-app-i18n="defer_hint"></p>
       <p id="send-error" class="form-error" role="alert"></p>
       <button id="send-submit" type="submit" class="primary-button" data-app-i18n="send_start"></button>
     </form>
@@ -135,11 +136,21 @@
   <div class="dialog-panel">
     <header class="dialog-header"><div><p class="eyebrow" data-gallery-i18n="on_frame">On this frame</p><h2 id="dialog-title"></h2></div><button id="dialog-close" class="close-button" type="button" aria-label="Close">×</button></header>
     <div class="dialog-image-wrap"><img id="dialog-image" alt="" hidden><p id="dialog-preview-status" role="status"></p></div>
+    <p id="dialog-caption" class="dialog-caption" hidden></p>
     <p id="dialog-details" class="quiet"></p>
+    <section id="flow-photo-panel" class="notice" hidden>
+      <label class="field-label" for="flow-photo-name" data-gallery-i18n="flow_photo_name"></label>
+      <p class="quiet" data-gallery-i18n="flow_photo_hint"></p>
+      <input id="flow-photo-name" type="text" maxlength="80" autocomplete="off">
+      <div class="dialog-actions">
+        <button id="flow-photo-save" class="secondary-button" type="button" data-gallery-i18n="flow_photo_save" disabled></button>
+        <button id="flow-photo-remove" class="secondary-button" type="button" data-gallery-i18n="flow_photo_remove" disabled hidden></button>
+      </div>
+    </section>
     <p id="delete-warning" class="delete-warning" hidden data-gallery-i18n="delete_warning">This permanently deletes this photo from the selected frame. It cannot be undone.</p>
     <p id="dialog-read-only" class="notice" hidden data-gallery-i18n="read_only">You can view these photos. Deleting them also requires permission to manage photos.</p>
     <p id="dialog-status" class="dialog-status" role="status" aria-live="polite"></p>
-    <div class="dialog-actions"><button id="dialog-cancel" class="secondary-button" type="button" data-gallery-i18n="keep">Keep photo</button><button id="toggle-visibility" class="secondary-button" type="button" disabled hidden></button><button id="delete-photo" class="danger-button" type="button" disabled data-gallery-i18n="delete">Permanently delete</button></div>
+    <div class="dialog-actions"><button id="display-photo" type="button" disabled hidden data-gallery-i18n="display_photo"></button><button id="dialog-cancel" class="secondary-button" type="button" data-gallery-i18n="keep">Keep photo</button><button id="toggle-visibility" class="secondary-button" type="button" disabled hidden></button><button id="delete-photo" class="danger-button" type="button" disabled data-gallery-i18n="delete">Permanently delete</button></div>
   </div>
 </section>
 <script src="gallery.js" data-frameo-inline></script>

@@ -85,11 +85,20 @@ test('uncertain deletion is never repeated for the same snapshot and never leaks
   await assert.rejects(f.gallery.delete(request), { code: 'DELETE_UNVERIFIED' }); assert.equal(deletes, 1);
 });
 
-test('a failed or unsupported preview cannot authorize deletion and an expired snapshot must be refreshed', async () => {
+test('a bounded video thumbnail is read-only and an expired snapshot must be refreshed', async () => {
   const f = fixture(); f.items[0].type = 'video';
+  let previewed = 0;
+  f.app.engine.previewMedia = async (peer, mediaId, options) => {
+    assert.equal(peer, PEER); assert.equal(mediaId, ID);
+    assert.deepEqual(options, { name: 'Homey du salon', includeCaption: true, videoThumbnail: true, encoding: 'jpeg' });
+    previewed++;
+    return { mime: 'image/jpeg', caption: 'Birthday' };
+  };
   const page = await f.gallery.list({ id: PEER });
-  await assert.rejects(f.gallery.preview({ id: PEER, mediaId: ID }), { code: 'MEDIA_TYPE_UNSUPPORTED' });
-  assert(!f.calls.some(call => Array.isArray(call) && call[0] === 'preview'));
+  assert.deepEqual(await f.gallery.preview({ id: PEER, mediaId: ID }), { mime: 'image/jpeg', caption: 'Birthday' });
+  assert.equal(previewed, 1);
+  await assert.rejects(f.gallery.delete({ id: PEER, mediaId: ID, revision: page.revision, confirmation: 'delete' }), { code: 'MEDIA_TYPE_UNSUPPORTED' });
+  assert(!f.calls.some(call => Array.isArray(call) && call[0] === 'delete'));
   f.advance(5001);
   await assert.rejects(f.gallery.delete({ id: PEER, mediaId: ID, revision: page.revision, confirmation: 'delete' }), { code: 'GALLERY_STALE' });
 });

@@ -336,6 +336,38 @@ test('selected sources can be reordered and removed, remain temporary and releas
   assert.equal(f.live.size, 0);
   assert.equal(f.revoked.length, 3);
 });
+test('crop focus is chosen on each file preview and whole-image fit omits it from uploads', async () => {
+  const f = fixture();
+  await f.ui.init();
+  await f.ui.addFiles([file('A.jpg'), file('B.jpg')]);
+  const row = index => f.elements['send-selection'].children[index];
+  const [,, imageButton, reset] = row(0).children[3].children;
+  imageButton.children[0].getBoundingClientRect = () => ({ left: 10, top: 10, width: 160, height: 80 });
+  await imageButton.dispatch('click', { clientX: 50, clientY: 70 });
+  assert.equal(imageButton.children[1].attributes.get('style'), 'left:25%;top:75%');
+  await imageButton.dispatch('keydown', { key: 'ArrowRight' });
+  assert.equal(imageButton.children[1].attributes.get('style'), 'left:30%;top:75%');
+  assert.equal(reset.disabled, false);
+  const other = row(1).children[3].children;
+  await other[2].dispatch('keydown', { key: 'ArrowLeft' });
+  await other[3].dispatch('click');
+  assert.equal(other[2].children[1].attributes.get('style'), 'left:50%;top:50%');
+  f.elements['send-target'].value = 'frame:a';
+  await f.ui.sendSelection();
+  let uploads = f.calls.filter(call => call.route === '/uploads/finish');
+  assert.deepEqual(uploads[0].body.center, [0.3, 0.75]);
+  assert.equal(Object.hasOwn(uploads[1].body, 'center'), false);
+  await f.ui.addFiles([file('C.jpg')]);
+  await row(0).children[3].children[2].dispatch('keydown', { key: 'ArrowUp' });
+  f.elements['send-fit'].checked = true;
+  await f.elements['send-fit'].dispatch('change');
+  assert.equal(row(0).children.length, 3);
+  await f.ui.sendSelection();
+  uploads = f.calls.filter(call => call.route === '/uploads/finish');
+  assert.equal(uploads[2].body.fit, true);
+  assert.equal(Object.hasOwn(uploads[2].body, 'center'), false);
+  f.ui.destroy();
+});
 test('manual sending prepares one photo at a time and waits for its terminal job before the next source', async () => {
   const first = gate();
   let enqueued = 0;
@@ -393,6 +425,34 @@ test('manual sending prepares one photo at a time and waits for its terminal job
   assert.equal(f.elements['send-results'].children.length, 2);
   assert.equal(f.ui.stats().sending, false);
   assert.equal(f.live.size, 0);
+  f.ui.destroy();
+});
+test('a manual batch continues after an opted-in photo is parked for an offline frame', async () => {
+  const f = fixture({
+    handle: async (call, next) =>
+      call.route === '/transfers/job?jobId=job-1'
+        ? {
+            job: {
+              id: 'job-1',
+              phase: 'waiting',
+              status: 'waiting',
+              summary: { uncertain: 0 },
+              results: [{ name: 'Cadre salon', status: 'waiting' }],
+            },
+          }
+        : next(call),
+  });
+  await f.ui.init();
+  assert.equal(f.elements['send-defer'].checked, false);
+  await f.ui.addFiles([file('A.jpg'), file('B.jpg')]);
+  f.elements['send-target'].value = 'frame:a';
+  f.elements['send-defer'].checked = true;
+  await f.ui.sendSelection();
+  const submissions = f.calls.filter((call) => call.route === '/uploads/finish');
+  assert.equal(submissions.length, 2);
+  assert.ok(submissions.every(({ body }) => body.defer === true));
+  assert.equal(f.elements['send-defer'].checked, false);
+  assert.match(f.elements['send-progress-title'].textContent, /attendent le retour/i);
   f.ui.destroy();
 });
 test('an uncertain result stops the batch and cannot automatically resubmit the uncertain photo', async () => {

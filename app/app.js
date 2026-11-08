@@ -9,9 +9,11 @@ const { FrameoGroups } = require('./lib/frameo-groups');
 const { FrameoTransfers } = require('./lib/frameo-transfers');
 const { FrameoUploads } = require('./lib/frameo-uploads');
 const { FrameoMediaMonitor } = require('./lib/frameo-media-monitor');
+const { FrameoDisplayPhotos } = require('./lib/frameo-display-photos');
 
 const ERROR_KEYS = Object.freeze({
   ENGINE_NOT_READY: 'errors.not_ready', ENGINE_CONFIG_INVALID: 'errors.not_ready',
+  UNSUPPORTED_RUNTIME: 'errors.unsupported_runtime',
   FRAME_UNAVAILABLE: 'errors.frame_unavailable', FRAME_UNKNOWN: 'errors.frame_unavailable',
   BUSY: 'errors.busy', QUEUE_FULL: 'errors.busy', TIMEOUT: 'errors.timeout', ABORTED: 'errors.aborted',
   URL_INVALID: 'errors.url_invalid', IMAGE_TOO_LARGE: 'errors.image_too_large',
@@ -21,6 +23,9 @@ const ERROR_KEYS = Object.freeze({
   GROUP_INVALID: 'errors.group_invalid', GROUP_LIMIT: 'errors.group_limit', GROUP_FRAME_UNKNOWN: 'errors.group_frame_unknown',
   TRANSFER_TARGET_INVALID: 'errors.transfer_target_invalid', TRANSFER_SOURCE_INVALID: 'errors.transfer_source_invalid',
   TRANSFER_CANCELLED: 'errors.transfer_cancelled', TRANSFER_JOURNAL_FAILED: 'errors.transfer_journal_failed',
+  DISPLAY_PHOTO_NOT_FOUND: 'errors.display_photo_not_found', DISPLAY_UNVERIFIED: 'gallery.errors.display_uncertain',
+  MEDIA_NOT_FOUND: 'errors.display_media_missing', PERMISSION_REQUIRED: 'gallery.errors.permission',
+  ACCESS_MODE_SEND: 'gallery.errors.send_only', CONNECTION_FAILED: 'errors.frame_unavailable',
 });
 
 module.exports = class FrameoApp extends Homey.App {
@@ -33,6 +38,8 @@ module.exports = class FrameoApp extends Homey.App {
     this.stopping = false;
     this.engine = new FrameoEngine({ homey: this.homey, binaryPath: path.join(__dirname, 'bin', 'homey-frameo-linux-arm64') });
     this.gallery = new FrameoGallery(this);
+    this.displayPhotos = new FrameoDisplayPhotos(this);
+    this.displayPhotos.ready.catch(() => this.log('Saved Frameo display photos could not be loaded.'));
     this.previewCache = new PreviewCache();
     this.widget = new FrameoWidget(this);
     this.groups = new FrameoGroups(this);
@@ -69,8 +76,9 @@ module.exports = class FrameoApp extends Homey.App {
   async waitUntilReady() {
     await this.readyPromise;
     if (!this.runtimeStatus.ready) {
-      const error = new Error(this.homey.__('errors.not_ready'));
-      error.code = 'ENGINE_NOT_READY'; throw error;
+      const code = this.runtimeStatus.error === 'UNSUPPORTED_RUNTIME' ? 'UNSUPPORTED_RUNTIME' : 'ENGINE_NOT_READY';
+      const error = new Error(this.homey.__(ERROR_KEYS[code]));
+      error.code = code; throw error;
     }
   }
   localizedError(error, fallback = 'errors.send_failed') {
@@ -82,6 +90,27 @@ module.exports = class FrameoApp extends Homey.App {
     this.photoReceived = this.homey.flow.getDeviceTriggerCard('photo_received');
     this.photoFailed = this.homey.flow.getDeviceTriggerCard('photo_failed');
     this.mediaDetected = this.homey.flow.getDeviceTriggerCard('media_detected');
+    this.frameBackOnline = this.homey.flow.getDeviceTriggerCard('frame_back_online');
+    const display = this.homey.flow.getActionCard('display_saved_photo');
+    display.registerArgumentAutocompleteListener('photo', async (query, args) => {
+      const frameId = args?.device?.getData?.()?.id;
+      if (!frameId || this.stopping) return [];
+      return this.displayPhotos.suggest(frameId, query);
+    });
+    display.registerRunListener(async args => {
+      try {
+        await this.waitUntilReady();
+        const frameId = args?.device?.getData?.()?.id;
+        const mediaId = await this.displayPhotos.resolve(frameId, args.photo?.id);
+        try {
+          await this.gallery.displayPhoto(frameId, mediaId);
+        } catch (error) {
+          if (error?.code === 'MEDIA_NOT_FOUND') await this.displayPhotos.remove(frameId, mediaId).catch(() => {});
+          throw error;
+        }
+        return true;
+      } catch (error) { throw this.localizedError(error, 'errors.display_failed'); }
+    });
     this.homey.flow.getActionCard('send_photo_url').registerRunListener(async args => {
       await this.queueTransfer(args.device, 'url', args.url, args); return true;
     });
@@ -105,7 +134,7 @@ module.exports = class FrameoApp extends Homey.App {
     this.homey.flow.getConditionCard('frame_reachable').registerRunListener(async args => {
       try { await args.device.refreshInfo(); return true; }
       catch (error) {
-        if (['BUSY', 'QUEUE_FULL', 'ENGINE_NOT_READY', 'ABORTED'].includes(error.code)) throw this.localizedError(error, 'errors.refresh_failed');
+        if (['BUSY', 'QUEUE_FULL', 'ENGINE_NOT_READY', 'UNSUPPORTED_RUNTIME', 'ABORTED'].includes(error.code)) throw this.localizedError(error, 'errors.refresh_failed');
         return false;
       }
     });

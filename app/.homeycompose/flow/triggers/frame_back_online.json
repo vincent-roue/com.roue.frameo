@@ -1,0 +1,29 @@
+{
+  "title": {
+    "en": "The frame is reachable again",
+    "fr": "Le cadre est de nouveau joignable",
+    "nl": "De fotolijst is weer bereikbaar",
+    "de": "Der Bilderrahmen ist wieder erreichbar"
+  },
+  "hint": {
+    "en": "Triggers on the first successful check after two failed connection checks. The first successful check after app startup sets the baseline.",
+    "fr": "Se déclenche au premier contrôle réussi après deux échecs de connexion. Le premier contrôle réussi après le démarrage de l’app sert de référence.",
+    "nl": "Start bij de eerste geslaagde controle na twee mislukte verbindingscontroles. De eerste geslaagde controle na het opstarten van de app vormt het uitgangspunt.",
+    "de": "Löst bei der ersten erfolgreichen Prüfung nach zwei fehlgeschlagenen Verbindungsprüfungen aus. Die erste erfolgreiche Prüfung nach dem Start der App dient als Ausgangspunkt."
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=frameo"
+    }
+  ],
+  "tokens": [
+    {
+      "name": "checked_at",
+      "type": "string",
+      "title": { "en": "Check time", "fr": "Date du contrôle", "nl": "Controletijd", "de": "Prüfzeitpunkt" },
+      "example": "2026-11-06T09:30:00Z"
+    }
+  ]
+}

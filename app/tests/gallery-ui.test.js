@@ -325,13 +325,39 @@ test('videos without image previews cannot be deleted; public or active image fo
     if (route === '/gallery/preview') throw Object.assign(new Error('unsupported'), { code: 'MEDIA_TYPE_UNSUPPORTED' });
     assert.fail(route);
   });
-  await view.ui.init(); await tick(); await view.open();
-  assert.equal(view.elements['dialog-preview-status'].textContent, 'Vidéo');
+  await view.ui.init(); await tick();
+  assert.equal(view.calls.some(call => call.route === '/gallery/preview'), false);
+  await view.open(); await tick();
+  assert.equal(view.elements['dialog-preview-status'].textContent, 'Vignette vidéo indisponible');
+  assert.equal(view.calls.filter(call => call.route === '/gallery/preview').length, 1);
   assert.equal(view.elements['delete-photo'].disabled, true);
   assert.throws(() => previewUrl({ ...preview, mime: 'image/svg+xml' }));
   assert.throws(() => previewUrl({ ...preview, data: 'https://example.com/photo.jpg' }));
   assert.throws(() => previewUrl({ ...preview, bytes: 5 * 1024 * 1024 }));
   assert.equal(previewUrl(preview), 'data:image/jpeg;base64,AA==');
+});
+
+test('a video opens as a still image with a text caption and read-only controls', async () => {
+  const caption = '<img src=x onerror=alert(1)>';
+  const view = setup(({ route }) => {
+    if (route === '/gallery/frames') return { frames: [frame()] };
+    if (route === '/gallery/list') return page([{ ...photo(), type: 'video' }]);
+    if (route === '/gallery/preview') return { ...preview, caption };
+    assert.fail(route);
+  });
+  await view.ui.init(); await tick();
+  assert.equal(view.calls.some(call => call.route === '/gallery/preview'), false);
+  await view.open(); await tick();
+  assert.equal(view.elements['dialog-caption'].hidden, true);
+  view.decodeDialog();
+  assert.equal(view.elements['dialog-image'].hidden, false);
+  assert.equal(view.elements['dialog-caption'].hidden, false);
+  assert.equal(view.elements['dialog-caption'].textContent, caption);
+  assert.equal(view.elements['delete-photo'].hidden, true);
+  assert.equal(view.elements['toggle-visibility'].hidden, true);
+  await view.elements['dialog-close'].dispatch('click');
+  assert.equal(view.elements['dialog-caption'].hidden, true);
+  assert.equal(view.elements['dialog-caption'].textContent, '');
 });
 
 test('settings show a recoverable error after startup failure, with complete FR/EN/NL/DE strings', async () => {
@@ -363,4 +389,36 @@ test('gallery follows Homey language before phone or fallback options and locali
   assert.equal(browser.document.documentElement.lang, 'de');
   assert.equal(browser.elements['gallery-status'].textContent, translations.de.no_frames);
   browser.ui.destroy();
+});
+
+test('the selected preview can be displayed and named for a Flow without sharing its bytes', async () => {
+  const id = '9007199254740993123';
+  const view = setup(({ route, body }) => {
+    if (route === '/gallery/frames') return { frames: [frame()] };
+    if (route === '/gallery/list') return page([photo(id)]);
+    if (route === '/gallery/preview') return preview;
+    if (route === '/gallery/display') {
+      assert.deepEqual(body, { id: 'frame-a', mediaId: id, revision: 'snapshot-a' });
+      return { mediaId: id, requested: true };
+    }
+    if (route === '/gallery/flow-photo') {
+      assert.deepEqual(body, { id: 'frame-a', mediaId: id, revision: 'snapshot-a', name: body.name === null ? null : 'Souvenir' });
+      return { name: body.name };
+    }
+    assert.fail(route);
+  });
+  await view.ui.init(); await tick(); await view.open();
+  assert.equal(view.elements['display-photo'].disabled, true);
+  view.decodeDialog();
+  await view.elements['display-photo'].dispatch('click');
+  assert.equal(view.elements['dialog-status'].textContent, translations.fr.display_requested);
+  assert.equal(view.calls.filter(call => call.route === '/gallery/preview').length, 1);
+  view.elements['flow-photo-name'].value = 'Souvenir';
+  await view.elements['flow-photo-name'].dispatch('input');
+  await view.elements['flow-photo-save'].dispatch('click');
+  assert.equal(view.elements['dialog-status'].textContent, translations.fr.flow_photo_saved);
+  await view.elements['flow-photo-remove'].dispatch('click');
+  assert.equal(view.elements['flow-photo-remove'].hidden, true);
+  assert.equal(view.elements['dialog-status'].textContent, translations.fr.flow_photo_removed);
+  view.ui.destroy();
 });

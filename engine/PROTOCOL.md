@@ -6,7 +6,8 @@ stdout. No diagnostic output belongs on stdout or stderr. The engine never reads
 or writes a configuration file and never contacts the user's NAS.
 
 Requests are limited to 512 KiB. Supported operations are `probe`, `pair`, `info`,
-`send`, `permission`, `listMedia`, `getMedia`, `deleteMedia`, and `listFrames`.
+`send`, `permission`, `listMedia`, `getMedia`, `deleteMedia`, `setMediaVisible`,
+`displayMedia`, and `listFrames`.
 Unknown fields and operations are rejected. `network`
 accepts `auto` (default), `local`, or `relay`. All operations have deadlines;
 the wrapper also enforces a process deadline.
@@ -79,20 +80,24 @@ connection/protocol failures retain their existing controlled error codes. Error
 never include the code, private identity, raw frame response, or upstream details.
 
 `send` takes an absolute local `path`, optional `caption` and boolean `fit`.
+The optional two-element `center` array sets the crop focus as fractions of the
+image width and height, each between 0 and 1. The app uses it when filling the
+screen and omits it in fit mode.
 The caller downloads and validates network images. The engine accepts only a
 regular, non-symlink JPEG, PNG, or WebP file of at most 20 MiB. Successful output
 contains `peer`, decimal-string `mediaId`, `bytes`, `confirmed: true`, and `route`.
 Success means the frame acknowledged delivery; it does not prove on-screen
 display or wake the screen.
 The upstream sender reads the whole image into memory, bounded here by the
-20 MiB input limit. Operations other than the three explicit gallery operations
+20 MiB input limit. Operations outside the gallery
 reject incoming multipart replies and limit incoming session traffic to 1 MiB
 before the upstream reassembler sees it.
 
-`listMedia`, `getMedia`, and `deleteMedia` require the existing saved identity and
-paired frame. They first obtain valid frame information and check the existing
-permission flags. Listing and preview retrieval require view permission; deletion
-requires both view and management permission. Missing permission returns
+`listMedia`, `getMedia`, `deleteMedia`, `setMediaVisible` and `displayMedia`
+require the existing saved identity and paired frame. They first obtain valid
+frame information and check the existing permission flags. Listing and preview
+retrieval require view permission. Changes and display requests require both
+view and management permission. Missing permission returns
 `PERMISSION_REQUIRED`. These operations never ask for permission automatically,
 pair a frame, create an identity, send a photo, or return private configuration.
 
@@ -131,8 +136,7 @@ Dimensions must be positive and no greater than 2,048 pixels per side and
 is performed. No advertised upstream dimensions or extension substitute for
 inspecting the actual bytes.
 
-Only the native device image requests `encoding: "jpeg"`, because Homey's native
-image service rejected actual WebP previews during live testing. After all byte
+The optional `encoding: "jpeg"` accommodates clients that need JPEG. After all byte
 and dimension limits pass, WebP is independently checked with the pinned
 golang.org/x/image v0.47.0 DecodeConfig, then decoded. PNG can also be converted;
 JPEG input retains its original bytes. Decoded dimensions must match the verified
@@ -146,6 +150,17 @@ Success writes only the verified preview bytes
 to the temporary file and returns
 `{ peer, mediaId, bytes, extension, mime, width, height, sha256 }`.
 There is no base64 or image data in JSON.
+
+With `previewCaption: true`, the result can include the caption from the media
+metadata. With `videoThumbnail: true`, the caller requests one still preview
+and must set `encoding: "jpeg"`. The engine bounds input and output to 512 KiB,
+checks the offered header and signature, and rejects a full video or extra stream.
+
+`displayMedia` validates one exact photo ID against the current frame listing
+and sends frame command 35 once. The result `{ peer, mediaId, requested: true }`
+means the request was sent. The protocol has no display acknowledgement. An
+interrupted write returns `DISPLAY_UNVERIFIED`. See the independent
+[frame protocol reference](https://github.com/yasoob/frameo-client/blob/master/docs/api.md#frame-protocol-reference).
 
 `deleteMedia` takes one exact canonical `mediaId`. Wildcards, arrays, additional
 identifiers, and out-of-range numbers are rejected. With a 25-second overall
@@ -171,7 +186,7 @@ and only the response types needed for that operation can be reassembled.
 Metadata entries are counted directly on the protobuf wire before allocating
 upstream's repeated message objects. Preview headers are checked before
 upstream's larger media accumulator sees them, and segment bytes cannot exceed
-the bounded declaration. Original upstream source files are unchanged.
+the bounded declaration.
 
 Gallery errors include `INVALID_MEDIA_ID`, `MEDIA_NOT_FOUND`, `PERMISSION_REQUIRED`,
 `MEDIA_TOO_LARGE`, `IMAGE_FORMAT_UNSUPPORTED`, `INVALID_FRAME_RESPONSE`,

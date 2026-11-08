@@ -12,6 +12,19 @@
   const translations = {
   "en": {
     "language": "en",
+    "display_photo": "Display on the frame",
+    "photo_action_pending": "Sending request…",
+    "display_requested": "Display request sent to the frame.",
+    "display_uncertain": "The display request could not be verified. Check the frame before trying again.",
+    "flow_photo_name": "Photo name in Flows",
+    "flow_photo_hint": "Name this photo to select it in a Flow. Homey saves a reference to the photo.",
+    "flow_photo_save": "Save for Flows",
+    "flow_photo_remove": "Remove from Flows",
+    "flow_photo_saved": "This photo is now available in Flows.",
+    "flow_photo_removed": "The reference was removed from Flows.",
+    "flow_photo_limit": "The limit of 64 saved photo references has been reached.",
+    "flow_photo_name_taken": "Another photo on this frame already uses that name.",
+    "flow_photo_invalid": "Enter a name for this photo.",
     "title": "Your frame, a little closer",
     "intro": "Browse the photos on your frame, right here in Homey.",
     "frame_label": "Photo frame",
@@ -25,6 +38,7 @@
     "loading_preview": "Loading preview…",
     "no_frames": "Add a Frameo photo frame in Homey to open its gallery.",
     "no_preview": "Preview unavailable",
+    "video_thumbnail_unavailable": "Video thumbnail unavailable",
     "send_mode": "Sending only",
     "view_mode": "Viewing",
     "manage_mode": "Viewing and deletion",
@@ -95,6 +109,19 @@
   },
   "fr": {
     "language": "fr",
+    "display_photo": "Afficher sur le cadre",
+    "photo_action_pending": "Demande en cours…",
+    "display_requested": "Demande d’affichage envoyée au cadre.",
+    "display_uncertain": "L’envoi de la demande d’affichage n’a pas pu être vérifié. Vérifiez le cadre avant de réessayer.",
+    "flow_photo_name": "Nom de la photo dans les Flows",
+    "flow_photo_hint": "Nommez cette photo pour la retrouver dans un Flow. Homey conserve uniquement sa référence.",
+    "flow_photo_save": "Enregistrer pour les Flows",
+    "flow_photo_remove": "Retirer des Flows",
+    "flow_photo_saved": "Cette photo est maintenant disponible dans les Flows.",
+    "flow_photo_removed": "La référence a été retirée des Flows.",
+    "flow_photo_limit": "La limite de 64 références de photos est atteinte.",
+    "flow_photo_name_taken": "Une autre photo de ce cadre porte déjà ce nom.",
+    "flow_photo_invalid": "Saisissez un nom pour cette photo.",
     "title": "Votre cadre, un peu plus près",
     "intro": "Retrouvez les photos de votre cadre, ici dans Homey.",
     "frame_label": "Cadre photo",
@@ -108,6 +135,7 @@
     "loading_preview": "Chargement de l’aperçu…",
     "no_frames": "Ajoutez un cadre Frameo dans Homey pour ouvrir sa galerie.",
     "no_preview": "Aperçu indisponible",
+    "video_thumbnail_unavailable": "Vignette vidéo indisponible",
     "send_mode": "Envoi uniquement",
     "view_mode": "Consultation",
     "manage_mode": "Consultation et suppression",
@@ -178,6 +206,19 @@
   },
   "nl": {
     "language": "nl",
+    "display_photo": "Weergeven op de fotolijst",
+    "photo_action_pending": "Verzoek wordt verwerkt…",
+    "display_requested": "Weergaveverzoek verzonden naar de fotolijst.",
+    "display_uncertain": "Het weergaveverzoek kon niet worden bevestigd. Controleer de fotolijst voordat je het opnieuw probeert.",
+    "flow_photo_name": "Fotonaam in Flows",
+    "flow_photo_hint": "Geef deze foto een naam om hem in een Flow te kiezen. Homey bewaart alleen de verwijzing.",
+    "flow_photo_save": "Opslaan voor Flows",
+    "flow_photo_remove": "Verwijderen uit Flows",
+    "flow_photo_saved": "Deze foto is nu beschikbaar in Flows.",
+    "flow_photo_removed": "De verwijzing is verwijderd uit Flows.",
+    "flow_photo_limit": "De limiet van 64 opgeslagen fotoverwijzingen is bereikt.",
+    "flow_photo_name_taken": "Een andere foto op deze lijst heeft al die naam.",
+    "flow_photo_invalid": "Voer een naam voor deze foto in.",
     "title": "Je fotolijst, een stukje dichterbij",
     "intro": "Bekijk de foto’s op je fotolijst, hier in Homey.",
     "frame_label": "Fotolijst",
@@ -191,6 +232,7 @@
     "loading_preview": "Voorbeeld laden…",
     "no_frames": "Voeg een Frameo-fotolijst toe aan Homey om de galerij te openen.",
     "no_preview": "Voorbeeld niet beschikbaar",
+    "video_thumbnail_unavailable": "Videominiatuur niet beschikbaar",
     "send_mode": "Alleen verzenden",
     "view_mode": "Bekijken",
     "manage_mode": "Bekijken en verwijderen",
@@ -261,6 +303,19 @@
   },
   "de": {
     "language": "de",
+    "display_photo": "Auf dem Bilderrahmen anzeigen",
+    "photo_action_pending": "Anfrage wird bearbeitet…",
+    "display_requested": "Anzeigeanfrage an den Bilderrahmen gesendet.",
+    "display_uncertain": "Die Anzeigeanfrage konnte nicht bestätigt werden. Prüfe den Bilderrahmen, bevor du es erneut versuchst.",
+    "flow_photo_name": "Name des Fotos in Flows",
+    "flow_photo_hint": "Vergib einen Namen, um dieses Foto in einem Flow auszuwählen. Homey speichert nur den Verweis.",
+    "flow_photo_save": "Für Flows speichern",
+    "flow_photo_remove": "Aus Flows entfernen",
+    "flow_photo_saved": "Dieses Foto ist jetzt in Flows verfügbar.",
+    "flow_photo_removed": "Der Verweis wurde aus Flows entfernt.",
+    "flow_photo_limit": "Das Limit von 64 gespeicherten Fotoverweisen ist erreicht.",
+    "flow_photo_name_taken": "Ein anderes Foto auf diesem Rahmen hat bereits diesen Namen.",
+    "flow_photo_invalid": "Gib einen Namen für dieses Foto ein.",
     "title": "Dein Bilderrahmen, ein Stück näher",
     "intro": "Sieh dir die Fotos auf deinem Bilderrahmen direkt in Homey an.",
     "frame_label": "Bilderrahmen",
@@ -274,6 +329,7 @@
     "loading_preview": "Vorschau wird geladen…",
     "no_frames": "Füge einen Frameo-Bilderrahmen zu Homey hinzu, um seine Galerie zu öffnen.",
     "no_preview": "Vorschau nicht verfügbar",
+    "video_thumbnail_unavailable": "Videovorschaubild nicht verfügbar",
     "send_mode": "Nur senden",
     "view_mode": "Ansehen",
     "manage_mode": "Ansehen und Löschen",
@@ -371,8 +427,9 @@
       'permission-intro', 'permission-steps', 'permission-step-friend', 'enable-gallery', 'check-access', 'gallery-section', 'photo-count',
       'read-only-note', 'photo-grid', 'empty-state', 'pagination', 'previous-page', 'next-page', 'page-label', 'gallery-status',
       'gallery-error', 'disable-gallery', 'photo-dialog', 'dialog-title', 'dialog-close', 'dialog-image', 'dialog-preview-status',
-      'dialog-details', 'delete-warning', 'dialog-read-only', 'dialog-status', 'dialog-cancel', 'delete-photo',
-      'toggle-visibility', 'filter-type', 'filter-visibility', 'filter-sort'];
+      'dialog-details', 'dialog-caption', 'delete-warning', 'dialog-read-only', 'dialog-status', 'dialog-cancel', 'delete-photo',
+      'toggle-visibility', 'filter-type', 'filter-visibility', 'filter-sort',
+      'display-photo', 'flow-photo-panel', 'flow-photo-name', 'flow-photo-save', 'flow-photo-remove'];
     const el = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
     const listeners = [], pendingRequests = new Set();
     function supportedLanguage(value) {
@@ -504,6 +561,8 @@
       el['dialog-image'].removeAttribute('src');
       el['dialog-image'].onload = null;
       el['dialog-image'].onerror = null;
+      el['dialog-caption'].textContent = '';
+      el['dialog-caption'].hidden = true;
       document.body.classList.remove('dialog-open');
       el['gallery-page'].removeAttribute('aria-hidden');
       if (user && previousFocus && typeof previousFocus.focus === 'function') previousFocus.focus();
@@ -536,8 +595,24 @@
     }
 
     function updateDeleteButton() {
-      el['delete-photo'].disabled = deleting || !modal || !modal.decoded || !frame || !frame.mayManage || needsVerification || !revision;
+      el['delete-photo'].disabled = deleting || !modal || kind(modal.item) === 'video' || !modal.decoded || !frame || !frame.mayManage || needsVerification || !revision;
       if (el['toggle-visibility']) el['toggle-visibility'].disabled = el['delete-photo'].disabled;
+      updateDisplayControls();
+    }
+
+    function displaySelection() {
+      if (!modal?.decoded || !['photo', 'picture', '0'].includes(String(modal.item.type)) || !frame?.mayManage || frame.id !== modal.frameId || !revision) return null;
+      return { id: frame.id, mediaId: modal.item.id, revision };
+    }
+
+    function updateDisplayControls() {
+      const selection = displaySelection();
+      const disabled = deleting || needsVerification || !selection;
+      el['display-photo'].hidden = el['flow-photo-panel'].hidden = !selection;
+      el['display-photo'].disabled = el['flow-photo-name'].disabled = disabled;
+      el['flow-photo-save'].disabled = disabled || !el['flow-photo-name'].value.trim();
+      el['flow-photo-remove'].hidden = !modal?.item.flowName;
+      el['flow-photo-remove'].disabled = disabled;
     }
 
     function releasePreview(id) {
@@ -577,12 +652,12 @@
         for (let index = 0; index < raw.length; index++) data[index] = raw.charCodeAt(index);
         url = window.URL.createObjectURL(new window.Blob([data], { type: value.mime })); blob = true;
       }
-      const entry = { url, blob, bytes, pixels };
+      const entry = { url, blob, bytes, pixels, caption: cleanText(value.caption, 1000) };
       previews.set(id, entry); return entry;
     }
 
     function queuePreview(item, priority) {
-      if (!active || destroyed || previews.has(item.id) || loadingPreviews.has(generation + ':' + item.id)
+      if ((!priority && kind(item) === 'video') || !active || destroyed || previews.has(item.id) || loadingPreviews.has(generation + ':' + item.id)
         || previewQueue.some(task => task.item.id === item.id && task.version === generation)) return;
       const task = { item, version: generation, frameId: frame.id };
       priority ? previewQueue.unshift(task) : previewQueue.push(task);
@@ -592,9 +667,12 @@
     function showDialogPreview() {
       if (!modal) return;
       const entry = previews.get(modal.item.id);
+      const unavailable = kind(modal.item) === 'video' ? 'video_thumbnail_unavailable' : 'no_preview';
       el['dialog-image'].hidden = true;
+      el['dialog-caption'].textContent = '';
+      el['dialog-caption'].hidden = true;
       el['dialog-preview-status'].hidden = false;
-      el['dialog-preview-status'].textContent = t(entry && entry.error ? kind(modal.item) === 'video' ? 'video' : 'no_preview' : 'loading_preview');
+      el['dialog-preview-status'].textContent = t(entry?.error ? unavailable : 'loading_preview');
       modal.decoded = false;
       updateDeleteButton();
       if (!entry || !entry.url) return;
@@ -603,6 +681,8 @@
         if (destroyed || !modal || version !== dialogGeneration) return;
         modal.decoded = true;
         el['dialog-image'].hidden = false;
+        el['dialog-caption'].textContent = entry.caption;
+        el['dialog-caption'].hidden = !entry.caption;
         el['dialog-preview-status'].hidden = true;
         updateDeleteButton();
       };
@@ -612,7 +692,9 @@
         modal.decoded = false;
         el['dialog-image'].hidden = true;
         el['dialog-preview-status'].hidden = false;
-        el['dialog-preview-status'].textContent = t('no_preview');
+        el['dialog-caption'].textContent = '';
+        el['dialog-caption'].hidden = true;
+        el['dialog-preview-status'].textContent = t(unavailable);
         updateDeleteButton();
       };
       el['dialog-image'].src = entry.url;
@@ -623,13 +705,17 @@
       if (destroyed || deleting || !frame || !items.includes(item)) return;
       previousFocus = tile;
       modal = { item, decoded: false, frameId: frame.id };
+      el['flow-photo-name'].value = item.flowName || '';
       el['dialog-title'].textContent = frame.name;
-      el['dialog-details'].textContent = t('received', { date: displayDate(item.receiveDate || item.captureDate) }) + ' · ' + t(item.visible ? 'visible' : 'hidden');
-      el['delete-warning'].hidden = !frame.mayManage;
-      el['dialog-read-only'].hidden = frame.mayManage;
-      el['delete-photo'].hidden = !frame.mayManage;
+      const video = kind(item) === 'video';
+      el['dialog-details'].textContent = (video ? t('video') + ' · ' : '') +
+        t('received', { date: displayDate(item.receiveDate || item.captureDate) }) + ' · ' + t(item.visible ? 'visible' : 'hidden');
+      if (video && previews.get(item.id)?.error) previews.delete(item.id);
+      el['delete-warning'].hidden = video || !frame.mayManage;
+      el['dialog-read-only'].hidden = video || frame.mayManage;
+      el['delete-photo'].hidden = video || !frame.mayManage;
       if (el['toggle-visibility']) {
-        el['toggle-visibility'].hidden = !frame.mayManage;
+        el['toggle-visibility'].hidden = video || !frame.mayManage;
         el['toggle-visibility'].textContent = t(item.visible ? 'hide' : 'show');
       }
       el['dialog-status'].textContent = needsVerification ? t('refresh_required') : '';
@@ -643,7 +729,7 @@
 
     function renderTile(item) {
       const tile = document.createElement('button');
-      tile.type = 'button'; tile.className = 'photo-tile loading' + (item.visible ? '' : ' photo-hidden');
+      tile.type = 'button'; tile.className = 'photo-tile' + (kind(item) === 'video' ? '' : ' loading') + (item.visible ? '' : ' photo-hidden');
       tile.setAttribute('aria-label', t('photo_label', { kind: t(kind(item)), date: displayDate(item.captureDate || item.receiveDate), visibility: t(item.visible ? 'visible' : 'hidden') }));
       const cover = document.createElement('span'); cover.className = 'photo-cover';
       const placeholder = document.createElement('span'); placeholder.className = 'photo-placeholder'; placeholder.textContent = kind(item) === 'video' ? '▷' : '▧'; placeholder.setAttribute('aria-hidden', 'true');
@@ -714,7 +800,8 @@
           const id = mediaId(value && value.id);
           if (!id || seen.has(id)) throw new Error('INVALID_RESPONSE');
           seen.add(id);
-          return { id, type: value.type, visible: value.visible === true, captureDate: value.captureDate, receiveDate: value.receiveDate };
+          return { id, type: value.type, visible: value.visible === true, captureDate: value.captureDate, receiveDate: value.receiveDate,
+            flowName: cleanText(value.flowName, 80) };
         });
         revision = result.revision;
         nextCursor = result.nextCursor || null;
@@ -724,7 +811,7 @@
         el['empty-state'].hidden = items.length !== 0;
         el.pagination.hidden = pageIndex === 0 && !nextCursor;
         items.forEach(renderTile);
-        previewQueue = observer ? [] : items.map(item => ({ item, version, frameId }));
+        previewQueue = observer ? [] : items.filter(item => kind(item) !== 'video').map(item => ({ item, version, frameId }));
         announce(''); pumpPreviews();
       } catch (err) {
         if (!destroyed && version === generation) announce(errorText(err), true);
@@ -840,6 +927,45 @@
       }
     }
 
+    async function useSelectedPhoto(action) {
+      const selection = displaySelection();
+      if (!active || destroyed || deleting || needsVerification || !selection) return;
+      const name = action === 'save' ? el['flow-photo-name'].value.trim() : null;
+      if (action === 'save' && !name) return;
+      deleting = true; busy(false); updateDeleteButton();
+      el['dialog-close'].disabled = el['dialog-cancel'].disabled = true;
+      el['dialog-status'].textContent = t('photo_action_pending');
+      try {
+        if (action === 'display') {
+          const result = await api('POST', '/gallery/display', selection);
+          if (destroyed) return;
+          if (result?.requested !== true || result.mediaId !== selection.mediaId) throw new Error('DISPLAY_UNVERIFIED');
+          el['dialog-status'].textContent = t('display_requested');
+        } else {
+          const result = await api('POST', '/gallery/flow-photo', { ...selection, name });
+          if (destroyed) return;
+          if (result?.name !== null && typeof result?.name !== 'string') throw new Error('INVALID_RESPONSE');
+          modal.item.flowName = el['flow-photo-name'].value = cleanText(result.name, 80);
+          el['dialog-status'].textContent = t(result.name ? 'flow_photo_saved' : 'flow_photo_removed');
+        }
+      } catch (error) {
+        if (destroyed) return;
+        const code = String(error?.code || error?.message || '');
+        const key = action === 'display' && code === 'TIMEOUT' ? 'display_uncertain' : {
+          DISPLAY_UNVERIFIED: 'display_uncertain', DISPLAY_PHOTO_LIMIT: 'flow_photo_limit',
+          DISPLAY_PHOTO_NAME_TAKEN: 'flow_photo_name_taken', DISPLAY_PHOTO_INVALID: 'flow_photo_invalid',
+          GALLERY_STALE: 'stale',
+        }[code];
+        el['dialog-status'].textContent = key ? t(key) : errorText(error);
+      } finally {
+        deleting = false;
+        if (!destroyed) {
+          el['dialog-close'].disabled = el['dialog-cancel'].disabled = false;
+          busy(false); updateDeleteButton(); pumpPreviews();
+        }
+      }
+    }
+
     function setActive(value) {
       const next = value === true;
       if (destroyed || active === next) return;
@@ -856,7 +982,8 @@
       if (!modal) return;
       if (event.key === 'Escape') { event.preventDefault(); closeDialog(true); }
       if (event.key === 'Tab') {
-        const focusable = [el['dialog-close'], el['dialog-cancel'], el['toggle-visibility'], el['delete-photo']].filter(value => value && !value.disabled && !value.hidden);
+        const focusable = [el['dialog-close'], el['flow-photo-name'], el['flow-photo-save'], el['flow-photo-remove'],
+          el['display-photo'], el['dialog-cancel'], el['toggle-visibility'], el['delete-photo']].filter(value => value && !value.disabled && !value.hidden);
         if (!focusable.length) { event.preventDefault(); return; }
         const first = focusable[0], last = focusable[focusable.length - 1];
         if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
@@ -904,6 +1031,10 @@
       listen(el['dialog-cancel'], 'click', () => closeDialog(true));
       listen(el['photo-dialog'], 'click', event => { if (event.target === el['photo-dialog']) closeDialog(true); });
       listen(el['delete-photo'], 'click', deletePhoto);
+      listen(el['display-photo'], 'click', () => useSelectedPhoto('display'));
+      listen(el['flow-photo-name'], 'input', updateDisplayControls);
+      listen(el['flow-photo-save'], 'click', () => useSelectedPhoto('save'));
+      listen(el['flow-photo-remove'], 'click', () => useSelectedPhoto('remove'));
       if (el['toggle-visibility']) listen(el['toggle-visibility'], 'click', toggleVisibility);
       for (const [id, key] of [['filter-type', 'type'], ['filter-visibility', 'visibility'], ['filter-sort', 'sort']]) if (el[id]) {
         el[id].value = filters[key];

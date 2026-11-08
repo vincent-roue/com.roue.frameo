@@ -910,3 +910,30 @@ test('revocation queues a fresh inventory publication behind a delayed older SDK
   assert.equal(f.capabilityValues.get('frameo_video_count'), null);
   assert.equal(f.capabilityValues.get('frameo_media_checked'), t('device.inventory_unavailable'));
 });
+
+test('a return-to-reachability Flow fires once after two genuine failures following a baseline', async context => {
+  const f = fixture(); context.after(() => f.device.onUninit());
+  const events = [];
+  f.device.homey.app.frameBackOnline = { async trigger(device, tokens) {
+    assert.equal(device, f.device);
+    assert.equal(device.operation, null);
+    events.push(tokens);
+  } };
+  await f.device.onInit();
+  assert.deepEqual(events, []);
+  const fail = (code, details) => async () => { throw Object.assign(new Error(code), { code, details }); };
+  f.setInfo(fail('CONNECTION_FAILED'));
+  await assert.rejects(f.device.refreshInfo(), { code: 'CONNECTION_FAILED' });
+  f.setInfo(fail('TIMEOUT', { started: false }));
+  await assert.rejects(f.device.refreshInfo(), { code: 'TIMEOUT' });
+  f.setInfo(async () => declaredInfo());
+  await f.device.refreshInfo();
+  assert.deepEqual(events, []);
+  f.setInfo(fail('CONNECTION_REFUSED'));
+  await assert.rejects(f.device.refreshInfo(), { code: 'CONNECTION_REFUSED' });
+  await assert.rejects(f.device.refreshInfo(), { code: 'CONNECTION_REFUSED' });
+  f.setInfo(async () => declaredInfo());
+  await Promise.all([f.device.refreshInfo(), f.device.refreshInfo()]);
+  await f.device.refreshInfo();
+  assert.deepEqual(events, [{ checked_at: CHECKED_AT }]);
+});

@@ -43,39 +43,45 @@ import (
 )
 
 const (
-	maxRequestBytes  = 512 << 10
-	maxPhotoBytes    = 20 << 20
-	maxFrames        = 64
-	maxInboundBytes  = 1 << 20
-	maxGalleryItems  = 10000
-	maxGalleryJSON   = 2 << 20
-	maxPreviewBytes  = 4 << 20
-	maxPreviewSide   = 2048
-	maxPreviewPixels = 4000000
-	adapterChunkSize = 16316
-	upstreamRevision = "149f60b5ac7702f2cbb0761185b0d49a7431bf3f"
+	maxRequestBytes    = 512 << 10
+	maxPhotoBytes      = 20 << 20
+	maxFrames          = 64
+	maxInboundBytes    = 1 << 20
+	maxGalleryItems    = 10000
+	maxGalleryJSON     = 2 << 20
+	maxPreviewBytes    = 4 << 20
+	maxVideoThumbBytes = 512 << 10
+	previewMagicBytes  = 16
+	maxPreviewSide     = 2048
+	maxPreviewPixels   = 4000000
+	adapterChunkSize   = 16316
+	upstreamRevision   = "149f60b5ac7702f2cbb0761185b0d49a7431bf3f"
 )
 
 var keyPattern = regexp.MustCompile(`^[a-fA-F0-9]{64}$`)
 var codePattern = regexp.MustCompile(`^[0-9]{7,31}$`)
 var quietLog = slog.New(slog.NewTextHandler(io.Discard, nil))
 var errInvalidWebP = errors.New("invalid WebP preview header")
+var errVideoThumbnail = errors.New("video thumbnail unavailable")
 
 type request struct {
-	Operation string         `json:"operation"`
-	Config    *config.Config `json:"config,omitempty"`
-	Code      string         `json:"code,omitempty"`
-	Peer      string         `json:"peer,omitempty"`
-	Name      string         `json:"name,omitempty"`
-	Path      string         `json:"path,omitempty"`
-	Caption   string         `json:"caption,omitempty"`
-	Fit       bool           `json:"fit,omitempty"`
-	Network   string         `json:"network,omitempty"`
-	Access    string         `json:"access,omitempty"`
-	MediaID   string         `json:"mediaId,omitempty"`
-	Size      string         `json:"size,omitempty"`
-	Encoding  string         `json:"encoding,omitempty"`
-	Visible   *bool          `json:"visible,omitempty"`
+	Operation      string         `json:"operation"`
+	Config         *config.Config `json:"config,omitempty"`
+	Code           string         `json:"code,omitempty"`
+	Peer           string         `json:"peer,omitempty"`
+	Name           string         `json:"name,omitempty"`
+	Path           string         `json:"path,omitempty"`
+	Caption        string         `json:"caption,omitempty"`
+	Center         []float32      `json:"center,omitempty"`
+	Fit            bool           `json:"fit,omitempty"`
+	Network        string         `json:"network,omitempty"`
+	Access         string         `json:"access,omitempty"`
+	MediaID        string         `json:"mediaId,omitempty"`
+	Size           string         `json:"size,omitempty"`
+	Encoding       string         `json:"encoding,omitempty"`
+	PreviewCaption bool           `json:"previewCaption,omitempty"`
+	VideoThumbnail bool           `json:"videoThumbnail,omitempty"`
+	Visible        *bool          `json:"visible,omitempty"`
 }
 
 type publicError struct {
@@ -103,6 +109,7 @@ type frameSession interface {
 	GetMedia(context.Context, frameo.Fetch) (*frameo.Download, error)
 	DeleteMedia(context.Context, []int64) error
 	SetMediaVisible(context.Context, []int64, bool) error
+	DisplayMedia(context.Context, int64) error
 	SendPhoto(context.Context, frameo.Photo) (int64, error)
 	Close() error
 }
@@ -161,7 +168,7 @@ func execute(req request, deps dependencies) response {
 			"revision": upstreamRevision,
 		}}
 	}
-	gallery := req.Operation == "listMedia" || req.Operation == "getMedia" || req.Operation == "deleteMedia" || req.Operation == "setMediaVisible"
+	gallery := req.Operation == "listMedia" || req.Operation == "getMedia" || req.Operation == "deleteMedia" || req.Operation == "setMediaVisible" || req.Operation == "displayMedia"
 	if req.Operation != "pair" && req.Operation != "info" && req.Operation != "send" && req.Operation != "listFrames" && req.Operation != "permission" && !gallery {
 		return failure("UNSUPPORTED_OPERATION", "This operation is not supported.")
 	}
@@ -172,7 +179,7 @@ func execute(req request, deps dependencies) response {
 		return failure("INVALID_CODE", "Enter the current numeric friend code shown on the frame.")
 	}
 	var mediaID int64
-	if req.Operation == "getMedia" || req.Operation == "deleteMedia" || req.Operation == "setMediaVisible" {
+	if req.Operation == "getMedia" || req.Operation == "deleteMedia" || req.Operation == "setMediaVisible" || req.Operation == "displayMedia" {
 		var err error
 		mediaID, err = parseMediaID(req.MediaID)
 		if err != nil {
@@ -187,6 +194,20 @@ func execute(req request, deps dependencies) response {
 	}
 	if req.Encoding != "" && (req.Operation != "getMedia" || req.Encoding != "jpeg") {
 		return failure("INVALID_REQUEST", "Only JPEG conversion of a selected preview is supported.")
+	}
+	if (req.PreviewCaption || req.VideoThumbnail) && req.Operation != "getMedia" {
+		return failure("INVALID_REQUEST", "Preview options require a preview request.")
+	}
+	if req.VideoThumbnail && req.Encoding != "jpeg" {
+		return failure("INVALID_REQUEST", "A video thumbnail must be requested as a still JPEG.")
+	}
+	var center *[2]float32
+	if req.Center != nil {
+		if req.Operation != "send" || req.Fit || len(req.Center) != 2 || req.Center[0] < 0 || req.Center[0] > 1 || req.Center[1] < 0 || req.Center[1] > 1 {
+			return failure("INVALID_REQUEST", "The crop focus must be a point inside the photo.")
+		}
+		point := [2]float32(req.Center)
+		center = &point
 	}
 	cfg, err := validatedConfig(req.Config)
 	if err != nil {
@@ -239,6 +260,11 @@ func execute(req request, deps dependencies) response {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	policy := policyForOperation(req.Operation, mediaID)
+	if req.VideoThumbnail {
+		policy.videoThumbnail = true
+		policy.maxSession = maxVideoThumbBytes + (128 << 10)
+		policy.maxMessage = maxVideoThumbBytes + (64 << 10)
+	}
 	if req.Operation == "send" {
 		policy.sendAttempt = &atomic.Bool{}
 	}
@@ -266,7 +292,7 @@ func execute(req request, deps dependencies) response {
 	}
 	id, err := client.SendPhoto(ctx, frameo.Photo{
 		Path: req.Path, Extension: extension, Caption: req.Caption,
-		Fit: req.Fit, Taken: time.Now().UTC(),
+		Fit: req.Fit, Center: center, Taken: time.Now().UTC(),
 	})
 	if err != nil {
 		if policy.sendAttempt != nil && policy.sendAttempt.Load() {
@@ -297,7 +323,7 @@ func runGallery(ctx context.Context, client frameSession, peer sdg.PeerID, route
 		return failure("INVALID_FRAME_RESPONSE", "The frame returned incomplete information.")
 	}
 	permission := frameo.PermissionView
-	if req.Operation == "deleteMedia" || req.Operation == "setMediaVisible" {
+	if req.Operation == "deleteMedia" || req.Operation == "setMediaVisible" || req.Operation == "displayMedia" {
 		permission = frameo.PermissionManage
 	}
 	if !frameo.Granted(info, permission) {
@@ -308,7 +334,26 @@ func runGallery(ctx context.Context, client frameSession, peer sdg.PeerID, route
 		if err != nil {
 			return mediaFailure(err)
 		}
-		return writePreview(ctx, peer, id, download, output, req.Encoding)
+		limit := maxPreviewBytes
+		if req.VideoThumbnail {
+			limit = maxVideoThumbBytes
+		}
+		preview := writePreview(ctx, peer, id, download, output, req.Encoding, limit)
+		if preview.OK && req.PreviewCaption {
+			caption := strings.TrimSpace(strings.Map(func(r rune) rune {
+				if unicode.IsControl(r) {
+					return ' '
+				}
+				return r
+			}, download.Media.GetCaption()))
+			if runes := []rune(caption); len(runes) > 1000 {
+				caption = string(runes[:1000])
+			}
+			if caption != "" {
+				preview.Result.(map[string]any)["caption"] = caption
+			}
+		}
+		return preview
 	}
 	items, err := client.ListMedia(ctx)
 	if err != nil {
@@ -320,6 +365,24 @@ func runGallery(ctx context.Context, client frameSession, peer sdg.PeerID, route
 	}
 	if req.Operation == "listMedia" {
 		return response{OK: true, Result: listing}
+	}
+	if req.Operation == "displayMedia" {
+		for _, item := range items {
+			if item.GetMediaId() != id {
+				continue
+			}
+			if item.GetType() != pb.MediaMetaData_Type_MEDIAMETADATA_TYPE_PICTURE {
+				return failure("MEDIA_TYPE_UNSUPPORTED", "Only a stored photo can be displayed.")
+			}
+			if err := ctx.Err(); err != nil {
+				return mediaFailure(err)
+			}
+			if err := client.DisplayMedia(ctx, id); err != nil {
+				return failure("DISPLAY_UNVERIFIED", "The display request may have reached the frame.")
+			}
+			return response{OK: true, Result: map[string]any{"peer": peer.String(), "mediaId": strconv.FormatInt(id, 10), "requested": true}}
+		}
+		return failure("MEDIA_NOT_FOUND", "The selected photo is no longer in the frame listing.")
 	}
 	if !containsMedia(items, id) {
 		return failure("MEDIA_NOT_FOUND", "The selected photo is no longer in the frame listing.")
@@ -446,14 +509,14 @@ func openPreviewOutput(filename string) (*os.File, error) {
 	return file, nil
 }
 
-func writePreview(ctx context.Context, peer sdg.PeerID, id int64, download *frameo.Download, output *os.File, encoding string) response {
+func writePreview(ctx context.Context, peer sdg.PeerID, id int64, download *frameo.Download, output *os.File, encoding string, limit int) response {
 	if err := ctx.Err(); err != nil {
 		return mediaFailure(err)
 	}
 	if download == nil || download.Media == nil || download.Media.GetId() != id || len(download.Data) == 0 || int64(download.Media.GetSize()) != int64(len(download.Data)) {
 		return failure("INVALID_FRAME_RESPONSE", "The frame did not return the selected photo preview.")
 	}
-	if len(download.Data) > maxPreviewBytes {
+	if len(download.Data) > limit {
 		return failure("MEDIA_TOO_LARGE", "The selected preview exceeds the supported size.")
 	}
 	mime := http.DetectContentType(download.Data)
@@ -482,7 +545,7 @@ func writePreview(ctx context.Context, peer sdg.PeerID, id int64, download *fram
 	}
 	data := download.Data
 	if encoding == "jpeg" && mime != "image/jpeg" {
-		data, err = encodePreviewJPEG(ctx, data, mime, dimensions)
+		data, err = encodePreviewJPEG(ctx, data, mime, dimensions, limit)
 		if err != nil {
 			if errors.Is(err, sdg.ErrMessageTooLarge) || errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 				return mediaFailure(err)
@@ -525,8 +588,8 @@ func (w *previewJPEGWriter) Write(data []byte) (int, error) {
 // display it. Only an explicit encoding request performs a full decode, after
 // both bounded header readers have agreed on the dimensions. Original gallery
 // previews keep their exact bytes and require no decoding or JPEG allocation.
-func encodePreviewJPEG(ctx context.Context, data []byte, mime string, expected image.Config) ([]byte, error) {
-	if len(data) == 0 || len(data) > maxPreviewBytes || expected.Width <= 0 || expected.Height <= 0 ||
+func encodePreviewJPEG(ctx context.Context, data []byte, mime string, expected image.Config, limit int) ([]byte, error) {
+	if len(data) == 0 || len(data) > limit || expected.Width <= 0 || expected.Height <= 0 ||
 		expected.Width > maxPreviewSide || expected.Height > maxPreviewSide || int64(expected.Width)*int64(expected.Height) > maxPreviewPixels {
 		return nil, sdg.ErrMessageTooLarge
 	}
@@ -563,7 +626,7 @@ func encodePreviewJPEG(ctx context.Context, data []byte, mime string, expected i
 		draw.Draw(canvas, canvas.Bounds(), decoded, decoded.Bounds().Min, draw.Over)
 		decoded = canvas
 	}
-	writer := &previewJPEGWriter{limit: maxPreviewBytes}
+	writer := &previewJPEGWriter{limit: limit}
 	if err := jpeg.Encode(writer, decoded, &jpeg.Options{Quality: 85}); err != nil {
 		return nil, err
 	}
@@ -656,6 +719,9 @@ func webpPreviewConfig(data []byte) (image.Config, error) {
 }
 
 func mediaFailure(err error) response {
+	if errors.Is(err, errVideoThumbnail) {
+		return failure("MEDIA_TYPE_UNSUPPORTED", "The frame did not offer a small, still video thumbnail.")
+	}
 	var refused *frameo.FrameError
 	if errors.As(err, &refused) {
 		switch refused.Code {
@@ -936,16 +1002,17 @@ func productionDependencies() dependencies {
 type inboundPolicyKey struct{}
 
 type inboundPolicy struct {
-	operation   string
-	mediaID     int64
-	maxSession  int
-	maxMessage  int
-	sendAttempt *atomic.Bool
+	operation      string
+	mediaID        int64
+	maxSession     int
+	maxMessage     int
+	sendAttempt    *atomic.Bool
+	videoThumbnail bool
 }
 
 func policyForOperation(operation string, mediaID int64) inboundPolicy {
 	policy := inboundPolicy{operation: operation, mediaID: mediaID, maxSession: maxInboundBytes}
-	if operation == "listMedia" || operation == "deleteMedia" || operation == "setMediaVisible" {
+	if operation == "listMedia" || operation == "deleteMedia" || operation == "setMediaVisible" || operation == "displayMedia" {
 		policy.maxSession = 6 << 20
 		policy.maxMessage = 2 << 20
 	} else if operation == "getMedia" {
@@ -978,6 +1045,7 @@ type boundedTransport struct {
 	partial            map[int64]*boundedPartial
 	declaredMediaBytes int
 	receivedMediaBytes int
+	previewSignature   []byte
 }
 
 func (t *boundedTransport) Send(ctx context.Context, message []byte) error {
@@ -1089,7 +1157,7 @@ func (t *boundedTransport) addPart(payload []byte) ([]byte, error) {
 	}
 	kind := int32(binary.BigEndian.Uint32(message[4:8]))
 	allowed := (t.policy.operation == "getMedia" && (kind == frameo.TypeMedia || kind == frameo.TypeMediaDataSegment)) ||
-		((t.policy.operation == "listMedia" || t.policy.operation == "deleteMedia") && kind == frameo.TypeAllMediaMetaData)
+		((t.policy.operation == "listMedia" || t.policy.operation == "deleteMedia" || t.policy.operation == "displayMedia") && kind == frameo.TypeAllMediaMetaData)
 	if !allowed {
 		return nil, sdg.ErrMessageTooLarge
 	}
@@ -1131,7 +1199,7 @@ func countMetadataItems(payload []byte) error {
 func (t *boundedTransport) validateMessage(message []byte) error {
 	kind := int32(binary.BigEndian.Uint32(message[4:8]))
 	payload := message[8:]
-	if (t.policy.operation == "listMedia" || t.policy.operation == "deleteMedia") && kind == frameo.TypeAllMediaMetaData {
+	if (t.policy.operation == "listMedia" || t.policy.operation == "deleteMedia" || t.policy.operation == "displayMedia") && kind == frameo.TypeAllMediaMetaData {
 		return countMetadataItems(payload)
 	}
 	if t.policy.operation != "getMedia" {
@@ -1150,6 +1218,22 @@ func (t *boundedTransport) validateMessage(message []byte) error {
 		}
 		if media.GetId() != t.policy.mediaID {
 			return errors.New("wrong media identifier")
+		}
+		if t.policy.videoThumbnail {
+			switch media.GetType() {
+			case pb.Media_PICTURE, pb.Media_PICTURE_THUMB, pb.Media_VIDEO_THUMB, pb.Media_VIDEO_THUMB_FULL:
+			default:
+				return errVideoThumbnail
+			}
+			switch strings.ToLower(strings.TrimPrefix(media.GetFileExtension(), ".")) {
+			case "", "jpg", "jpeg", "png", "webp":
+			default:
+				return errVideoThumbnail
+			}
+			if media.GetSize() < previewMagicBytes || media.GetSize() > maxVideoThumbBytes || len(media.GetExtra()) != 0 {
+				return errVideoThumbnail
+			}
+			t.previewSignature = t.previewSignature[:0]
 		}
 		total := int64(media.GetSize())
 		if total <= 0 || total > maxPreviewBytes || len(media.GetExtra()) > 8 {
@@ -1172,6 +1256,17 @@ func (t *boundedTransport) validateMessage(message []byte) error {
 		var segment pb.MediaDataSegment
 		if err := proto.Unmarshal(payload, &segment); err != nil {
 			return errors.New("invalid media segment")
+		}
+		if t.policy.videoThumbnail && len(t.previewSignature) < previewMagicBytes {
+			data := segment.GetData()
+			t.previewSignature = append(t.previewSignature, data[:min(len(data), previewMagicBytes-len(t.previewSignature))]...)
+			if len(t.previewSignature) == previewMagicBytes {
+				switch http.DetectContentType(t.previewSignature) {
+				case "image/jpeg", "image/png", "image/webp":
+				default:
+					return errVideoThumbnail
+				}
+			}
 		}
 		t.receivedMediaBytes += len(segment.GetData())
 		if t.receivedMediaBytes > t.declaredMediaBytes {

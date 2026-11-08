@@ -17,7 +17,7 @@ const MAX_PROCESS_REQUEST = 512 * 1024;
 const MAX_PROCESS_OUTPUT = 2 * 1024 * 1024;
 const PEER = /^[0-9a-f]{64}$/i;
 const OPERATION_TIMEOUTS = { probe: 5000, pair: 80000, info: 30000, permission: 80000, send: 155000,
-  listMedia: 25000, getMedia: 30000, deleteMedia: 30000, setMediaVisible: 30000 };
+  listMedia: 25000, getMedia: 30000, deleteMedia: 30000, setMediaVisible: 30000, displayMedia: 30000 };
 class FrameoError extends Error {
   constructor(code, details) {
     super(typeof code === 'string' && /^[A-Z][A-Z0-9_]{0,63}$/.test(code) ? code : 'FRAMEO_OPERATION_FAILED');
@@ -194,6 +194,7 @@ class FrameoEngine {
   #homey;
   #binaryPath;
   #runner;
+  #unsupportedRuntime;
   #fetch;
   #config;
   #loaded = false;
@@ -219,6 +220,7 @@ class FrameoEngine {
     this.#homey = homey;
     this.#binaryPath = binaryPath || path.join(__dirname, '..', 'bin', 'homey-frameo-linux-arm64');
     this.#runner = runner;
+    this.#unsupportedRuntime = runner === runEngineProcess && (process.platform !== 'linux' || process.arch !== 'arm64');
     this.#fetch = fetchImpl;
     this.#maxBytes = maxBytes;
     this.#maxQueued = maxQueued;
@@ -249,6 +251,7 @@ class FrameoEngine {
   }
   #enqueue(operation, signal) {
     if (this.#closed || signal?.aborted) return Promise.reject(abortError());
+    if (this.#unsupportedRuntime) return Promise.reject(new FrameoError('UNSUPPORTED_RUNTIME', { started: false }));
     if (this.#queue.length >= this.#maxQueued) return Promise.reject(new FrameoError('QUEUE_FULL'));
     return new Promise((resolve, reject) => {
       const task = { operation, signal, resolve, reject, expired: false };
@@ -405,9 +408,9 @@ class FrameoEngine {
   invalidateMediaIndex(peer) { this.#mediaIndex.invalidate(peer); }
   mediaIndexStats() { return this.#mediaIndex.stats(); }
   performanceStats() { return this.#metrics.snapshot(); }
-  previewMedia(peer, mediaId, { name, signal, encoding, output = 'base64' } = {}) {
+  previewMedia(peer, mediaId, { name, signal, encoding, output = 'base64', includeCaption = false, videoThumbnail = false } = {}) {
     try { validateMediaId(mediaId); } catch (error) { return Promise.reject(error); }
-    if (encoding !== undefined && encoding !== 'jpeg') return Promise.reject(new FrameoError('IMAGE_FORMAT_UNSUPPORTED'));
+    if ((videoThumbnail || encoding !== undefined) && encoding !== 'jpeg') return Promise.reject(new FrameoError('IMAGE_FORMAT_UNSUPPORTED'));
     if (!['base64', 'buffer'].includes(output)) return Promise.reject(new FrameoError('IMAGE_FORMAT_UNSUPPORTED'));
     return this.#enqueue(async innerSignal => {
       await this.#load();
@@ -419,9 +422,11 @@ class FrameoEngine {
         const filename = path.join(directory, 'preview');
         const file = await fs.open(filename, 'wx', 0o600); await file.close();
         const raw = await this.#request('getMedia', { peer: expected, mediaId, path: filename,
-          size: 'preview', name: cleanText(name), ...(encoding === 'jpeg' ? { encoding } : {}) }, innerSignal);
+          size: 'preview', name: cleanText(name), ...(encoding === 'jpeg' ? { encoding } : {}),
+          ...(includeCaption ? { previewCaption: true } : {}), ...(videoThumbnail ? { videoThumbnail: true } : {}) }, innerSignal);
         const stat = await fs.lstat(filename);
-        if (!stat.isFile() || stat.isSymbolicLink() || stat.size < 8 || stat.size > 4 * 1024 * 1024 ||
+        const maximumBytes = videoThumbnail ? 512 * 1024 : 4 * 1024 * 1024;
+        if (!stat.isFile() || stat.isSymbolicLink() || stat.size < 8 || stat.size > maximumBytes ||
           raw?.peer !== expected || raw.mediaId !== mediaId || raw.bytes !== stat.size) throw new FrameoError('MEDIA_TOO_LARGE');
         const bytes = await fs.readFile(filename);
         const mime = bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255 ? 'image/jpeg'
@@ -431,8 +436,9 @@ class FrameoEngine {
           raw.width < 1 || raw.height < 1 || raw.width > 2048 || raw.height > 2048 || raw.width * raw.height > 4000000) {
           throw new FrameoError('IMAGE_FORMAT_UNSUPPORTED');
         }
+        const caption = includeCaption ? cleanText(raw.caption, 1000) : '';
         return { mime, ...(output === 'buffer' ? { buffer: bytes } : { data: bytes.toString('base64') }),
-          bytes: bytes.length, width: raw.width, height: raw.height };
+          bytes: bytes.length, width: raw.width, height: raw.height, ...(caption ? { caption } : {}) };
       } finally { await fs.rm(directory, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 }); }
     }, signal).catch(error => {
       if (['MEDIA_NOT_FOUND', 'PERMISSION_REQUIRED'].includes(error?.code)) this.invalidateMediaIndex(peer);
@@ -475,6 +481,21 @@ class FrameoEngine {
       if (raw?.peer !== expected || raw.mediaId !== mediaId || raw.visible !== visible
         || raw.acknowledged !== true || raw.verified !== true) throw new FrameoError('VISIBILITY_UNVERIFIED');
       return { mediaId, visible, acknowledged: true, verified: true };
+    }, signal);
+  }
+  displayMedia(peer, mediaId, { name, signal } = {}) {
+    try { validateMediaId(mediaId); } catch (error) { return Promise.reject(error); }
+    return this.#enqueue(async innerSignal => {
+      await this.#load();
+      const expected = this.#ensurePeer(peer);
+      let raw;
+      try { raw = await this.#request('displayMedia', { peer: expected, mediaId, name: cleanText(name) }, innerSignal); }
+      catch (error) {
+        if (['TIMEOUT', 'ABORTED', 'ENGINE_NOT_READY'].includes(error?.code)) throw new FrameoError('DISPLAY_UNVERIFIED');
+        throw error;
+      }
+      if (raw?.peer !== expected || raw.mediaId !== mediaId || raw.requested !== true) throw new FrameoError('DISPLAY_UNVERIFIED');
+      return { mediaId, requested: true };
     }, signal);
   }
   async frames() {
@@ -559,6 +580,11 @@ class FrameoEngine {
     }, options.signal);
   }
 
+  async preparedSize(handle) {
+    const prepared = this.#prepared.get(handle);
+    return prepared ? (await fs.stat(prepared.filename)).size : 0;
+  }
+
   async disposePrepared(handle) {
     const prepared = this.#prepared.get(handle);
     if (!prepared) return;
@@ -570,7 +596,9 @@ class FrameoEngine {
     this.invalidateMediaIndex(peer);
     try {
       const result = await this.#request('send', { peer, path: filename, name: cleanText(options.name),
-        caption: cleanText(options.caption, 1000), fit: options.fit === true, network: this.#network(options.network || 'auto') }, signal);
+        caption: cleanText(options.caption, 1000), fit: options.fit === true,
+        ...(options.center && options.fit !== true ? { center: options.center } : {}),
+        network: this.#network(options.network || 'auto') }, signal);
       return this.#sendResult(result, peer);
     } catch (error) {
       // A native refusal before SendPhoto is settled. A parent deadline,

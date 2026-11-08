@@ -1,11 +1,11 @@
 'use strict';
 const v8 = require('node:v8');
 
-const OPERATIONS = Object.freeze(['probe', 'pair', 'info', 'permission', 'send', 'listMedia', 'getMedia', 'deleteMedia', 'setMediaVisible']);
+const OPERATIONS = Object.freeze(['probe', 'pair', 'info', 'permission', 'send', 'listMedia', 'getMedia', 'deleteMedia', 'setMediaVisible', 'displayMedia']);
 const CODES = Object.freeze(['TIMEOUT', 'ABORTED', 'QUEUE_FULL', 'BUSY', 'FRAME_UNAVAILABLE', 'CONNECTION_FAILED', 'CONNECTION_REFUSED',
   'AUTHENTICATION_FAILED', 'PERMISSION_REQUIRED', 'PERMISSION_DENIED', 'PERMISSION_TIMEOUT', 'PERMISSION_NOT_GRANTED',
   'MEDIA_NOT_FOUND', 'MEDIA_TOO_LARGE', 'IMAGE_FORMAT_UNSUPPORTED', 'ENGINE_NOT_READY', 'ENGINE_CONFIG_INVALID',
-  'SEND_UNVERIFIED', 'DELETE_UNVERIFIED', 'VISIBILITY_UNVERIFIED', 'PAIRING_CODE_INVALID', 'PAIRING_FAILED', 'UNKNOWN_ERROR']);
+  'SEND_UNVERIFIED', 'DELETE_UNVERIFIED', 'VISIBILITY_UNVERIFIED', 'DISPLAY_UNVERIFIED', 'PAIRING_CODE_INVALID', 'PAIRING_FAILED', 'UNKNOWN_ERROR']);
 const safeBytes = value => Number.isSafeInteger(value) && value > 0 ? value : null;
 const rounded = value => Math.round(value * 100) / 100;
 const max = (before, value) => value === null ? before : before === null ? value : Math.max(before, value);

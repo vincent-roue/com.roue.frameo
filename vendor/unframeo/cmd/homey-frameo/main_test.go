@@ -96,6 +96,9 @@ func (f *fakeSession) DeleteMedia(_ context.Context, ids []int64) error {
 func (f *fakeSession) SetMediaVisible(context.Context, []int64, bool) error {
 	return errors.New("unexpected visibility mutation")
 }
+func (f *fakeSession) DisplayMedia(context.Context, int64) error {
+	return errors.New("unexpected display request")
+}
 func (f *fakeSession) Close() error { f.closed = true; return nil }
 
 func fixtureIdentity() *sdg.Identity {
@@ -244,6 +247,30 @@ func TestSendAcknowledgementPreservesInt64AndTransientSender(t *testing.T) {
 	}
 	if client.lastPhoto.Extension != "png" || !client.lastPhoto.Fit || client.lastPhoto.Caption != "Weather" {
 		t.Fatal("photo options lost")
+	}
+}
+
+func TestSendForwardsAnExplicitCropFocus(t *testing.T) {
+	file := filepath.Join(t.TempDir(), "photo.png")
+	if err := os.WriteFile(file, []byte("\x89PNG\r\n\x1a\nfixture-data"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	client := &fakeSession{mediaID: 3}
+	deps := failIfNetwork(t)
+	deps.connect = func(context.Context, *config.Config, sdg.PeerID, string) (frameSession, string, error) {
+		return client, "local", nil
+	}
+	req := request{Operation: "send", Config: fixtureConfig(), Path: file, Center: []float32{0, 0.75}}
+	if r := execute(req, deps); !r.OK || client.lastPhoto.Center == nil || *client.lastPhoto.Center != [2]float32{0, 0.75} {
+		t.Fatalf("explicit crop focus was lost: %#v", r)
+	}
+	req.Fit = true
+	if r := execute(req, failIfNetwork(t)); r.OK || r.Error.Code != "INVALID_REQUEST" {
+		t.Fatal("whole-image fit accepted a crop focus")
+	}
+	req.Fit, req.Center = false, []float32{1.25, 0.5}
+	if r := execute(req, failIfNetwork(t)); r.OK || r.Error.Code != "INVALID_REQUEST" {
+		t.Fatal("an out-of-image crop focus was accepted")
 	}
 }
 
@@ -890,7 +917,7 @@ func TestJPEGPreviewConversionChecksPixelLimitsAndRejectsInvalidPixelsBeforeWrit
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	if _, err := encodePreviewJPEG(ctx, fixturePNG(t), "image/png", image.Config{Width: 1, Height: 1}); !errors.Is(err, context.Canceled) {
+	if _, err := encodePreviewJPEG(ctx, fixturePNG(t), "image/png", image.Config{Width: 1, Height: 1}, maxPreviewBytes); !errors.Is(err, context.Canceled) {
 		t.Fatal("cancelled conversion began decoding")
 	}
 }

@@ -9,6 +9,7 @@ const ERROR_KEYS = Object.freeze({
   PAIRING_EXPIRED: 'errors.code_expired',
   FRAME_UNAVAILABLE: 'errors.frame_unavailable',
   ENGINE_NOT_READY: 'errors.not_ready',
+  UNSUPPORTED_RUNTIME: 'errors.unsupported_runtime',
   TIMEOUT: 'errors.timeout',
   ETIMEDOUT: 'errors.timeout',
   BUSY: 'errors.busy',

@@ -10,7 +10,7 @@ The initial beta targets Homey Pro (2023) with Homey software 12.9.0 or later. T
 
 ## Build
 
-From this directory, use Node.js 22 and run `npm install --ignore-scripts`, `npm test` and `npm run build`. The last command validates the Homey package at publish level and writes a local archive with its SHA-256. The build assembles the Homey Compose manifest, synchronizes the widget assets and includes the pairing and settings resources in their HTML pages.
+Use Node.js 22 to test the Homey runtime with `npm test`. Use Node.js 24 to build the package with the Homey CLI. Run `npm install --ignore-scripts` followed by `npm run build`. The build validates the Homey package at publish level, assembles its manifest and settings screens, and writes a local archive with its SHA-256.
 
 The checked-in ARM64 engine is built from `vendor/unframeo`. Use Go 1.27.3, run the package tests from that directory and rebuild the engine with the parameters below.
 

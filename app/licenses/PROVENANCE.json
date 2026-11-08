@@ -1,11 +1,11 @@
 {
-  "appVersion": "0.13.0",
+  "appVersion": "0.14.0",
   "binary": "bin/homey-frameo-linux-arm64",
-  "binarySha256": "b3e69465c63a02ae70b331001dc8829c531e7a61f554ecb759fed75d7026be70",
+  "binarySha256": "174d807792fccc5c2dcaa512d04430fc7a8500daebbbba39d7d507f3ebf7ad3d",
   "verifiedAgainst": [
     "app/bin/homey-frameo-linux-arm64",
-    "frameo-0.13.0-local.tar.gz",
-    "release/source-0.13.0"
+    "frameo-0.14.0-local.tar.gz",
+    "vendor/unframeo"
   ],
   "sourceMethod": "Byte-for-byte copies from the exact-version Go module cache and matching installed Go toolchain.",
   "runtime": {

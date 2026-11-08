@@ -29,3 +29,22 @@ test('ambiguous process errors are never retried and remain unverified',async t=
   const f=fixture(t,()=>({ok:false,error:{code,message:'PRIVATE TRACE'}}));await assert.rejects(f.engine.setMediaVisible(PEER,ID,false),{code});assert.equal(f.calls.length,1);
  }
 });
+test('display forwards only the selected exact signed ID and makes no claim of display confirmation', async t => {
+  const id = '-9223372036854775808';
+  const f = fixture(t, () => ({ ok: true, result: { peer: PEER, mediaId: id, requested: true, unexpected: 'private' } }));
+  assert.deepEqual(await f.engine.displayMedia(PEER, id, { name: 'Sender', path: '/not-used' }), { mediaId: id, requested: true });
+  const { config, ...request } = f.calls[0];
+  assert.deepEqual(request, { operation: 'displayMedia', peer: PEER, mediaId: id, name: 'Sender' });
+  assert.deepEqual(config, CONFIG);
+  await assert.rejects(f.engine.displayMedia(PEER, 10), { code: 'INVALID_MEDIA_ID' });
+  assert.equal(f.calls.length, 1);
+});
+
+test('display never retries a timeout or accepts a reply for another photo', async t => {
+  const mismatch = fixture(t, () => ({ ok: true, result: { peer: PEER, mediaId: '10', requested: true } }));
+  const timeout = fixture(t, () => ({ ok: false, error: { code: 'TIMEOUT' } }));
+  for (const fixture of [mismatch, timeout]) {
+    await assert.rejects(fixture.engine.displayMedia(PEER, ID), { code: 'DISPLAY_UNVERIFIED' });
+    assert.equal(fixture.calls.length, 1);
+  }
+});

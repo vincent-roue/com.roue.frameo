@@ -1,4 +1,10 @@
 {
+  "0.14.0": {
+    "en": "Choose a photo in the gallery to display it on the frame or use it in a Flow. Added captions, video thumbnails, manual crop focus, deferred delivery and a Flow for when a frame becomes reachable again.",
+    "fr": "Choisissez une photo dans la galerie pour l’afficher sur le cadre ou l’utiliser dans un Flow. Ajout des légendes, des vignettes vidéo, du point de cadrage, de l’envoi différé et d’un Flow quand un cadre redevient joignable.",
+    "nl": "Kies een foto in de galerij om die op de fotolijst te tonen of in een Flow te gebruiken. Nieuw zijn bijschriften, videominiaturen, het focuspunt, uitgesteld verzenden en een Flow als een lijst weer bereikbaar is.",
+    "de": "Wähle in der Galerie ein Foto zur Anzeige auf dem Rahmen oder für einen Flow. Neu sind Bildunterschriften, Videovorschaubilder, der Fokuspunkt, späterer Versand und ein Flow bei erneuter Erreichbarkeit."
+  },
   "0.13.2": {
     "en": "Updated the App Store artwork and added links to the community topic and source code.",
     "fr": "Nouveau visuel sur la fiche de la boutique et ajout des liens vers le sujet du forum et le code source.",

@@ -145,7 +145,8 @@ function getReport(app, options = {}) {
     partial: 0,
   };
   for (const job of safeArray(jobs, MAX_RECORDS)) {
-    const state = read(job, 'status');
+    const status = read(job, 'status');
+    const state = status === 'waiting' ? 'queued' : status;
     if (STATES.has(state)) historyStatus[state]++;
     for (const result of safeArray(read(job, 'results'), 64)) {
       if (!['failed', 'uncertain'].includes(read(result, 'status'))) continue;

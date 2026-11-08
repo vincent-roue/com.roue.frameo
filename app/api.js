@@ -6,9 +6,19 @@ module.exports = {
   async sendUrl({ homey, body }) { return homey.app.queueTransfer(homey.app.getDevice(body?.id), 'url', body?.url, body || {}); },
   async requestPermission({ homey, body }) { return homey.app.getDevice(body?.id).requestPermission(body?.access); },
   async galleryFrames({ homey }) { return homey.app.gallery.frames(); },
-  async galleryList({ homey, body }) { return homey.app.gallery.list(body || {}); },
+  async galleryList({ homey, body }) {
+    const page = await homey.app.gallery.list(body || {});
+    const names = await homey.app.displayPhotos.names(body.id).catch(() => new Map());
+    return { ...page, items: page.items.map(item => names.has(item.id) ? { ...item, flowName: names.get(item.id) } : item) };
+  },
   async galleryPreview({ homey, body }) { return homey.app.gallery.preview(body || {}); },
-  async galleryDelete({ homey, body }) { return homey.app.gallery.delete(body || {}); },
+  async galleryDelete({ homey, body }) {
+    const result = await homey.app.gallery.delete(body || {});
+    if (result.deleted) await homey.app.displayPhotos.remove(body.id, result.mediaId).catch(() => {});
+    return result;
+  },
+  async galleryDisplay({ homey, body }) { return homey.app.gallery.display(body || {}); },
+  async gallerySaveFlowPhoto({ homey, body }) { return homey.app.displayPhotos.save(body || {}); },
   async galleryMode({ homey, body }) { return homey.app.gallery.setMode(body || {}); },
   async galleryCheckAccess({ homey, body }) { return homey.app.gallery.checkAccess(body || {}); },
   async galleryVisibility({ homey, body }) { return homey.app.gallery.visibility(body || {}); },

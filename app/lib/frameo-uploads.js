@@ -82,7 +82,7 @@ class FrameoUploads {
       return { offset: session.offset };
     });
   }
-  async finish({ uploadId, caption, fit } = {}) {
+  async finish({ uploadId, caption, fit, center, defer } = {}) {
     this.assertOpen(); this.validId(uploadId); await this.sweep();
     const receipt = this.receipts.get(uploadId);
     if (receipt) return { jobId: receipt.jobId };
@@ -100,7 +100,8 @@ class FrameoUploads {
       session.state = 'finishing';
       const image = { contentType: session.mime, getStream: async () => createReadStream(session.filename) };
       try {
-        const result = await this.app.transfers.enqueueUploadedFile({ batchId: session.batchId, caption, fit }, image,
+        const result = await this.app.transfers.enqueueUploadedFile({ batchId: session.batchId, caption, fit,
+          ...(center === undefined ? {} : { center }), ...(defer === true ? { defer } : {}) }, image,
           () => this.release(session));
         session.jobId = result.jobId; session.state = 'queued';
         this.remember(uploadId, result.jobId);

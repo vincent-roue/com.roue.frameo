@@ -1,8 +1,8 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.roue.frameo",
-  "version": "0.13.2",
-  "source": "https://github.com/vincent-roue/com.roue.frameo/tree/v0.13.2",
+  "version": "0.14.0",
+  "source": "https://github.com/vincent-roue/com.roue.frameo/tree/v0.14.0",
   "homeyCommunityTopicId": 161844,
   "compatibility": ">=12.9.0",
   "sdk": 3,
@@ -63,6 +63,14 @@
     "galleryPreview": {
       "method": "POST",
       "path": "/gallery/preview"
+    },
+    "galleryDisplay": {
+      "method": "POST",
+      "path": "/gallery/display"
+    },
+    "gallerySaveFlowPhoto": {
+      "method": "POST",
+      "path": "/gallery/flow-photo"
     },
     "galleryDelete": {
       "method": "POST",
@@ -149,6 +157,41 @@
   },
   "flow": {
     "triggers": [
+      {
+        "title": {
+          "en": "The frame is reachable again",
+          "fr": "Le cadre est de nouveau joignable",
+          "nl": "De fotolijst is weer bereikbaar",
+          "de": "Der Bilderrahmen ist wieder erreichbar"
+        },
+        "hint": {
+          "en": "Triggers on the first successful check after two failed connection checks. The first successful check after app startup sets the baseline.",
+          "fr": "Se déclenche au premier contrôle réussi après deux échecs de connexion. Le premier contrôle réussi après le démarrage de l’app sert de référence.",
+          "nl": "Start bij de eerste geslaagde controle na twee mislukte verbindingscontroles. De eerste geslaagde controle na het opstarten van de app vormt het uitgangspunt.",
+          "de": "Löst bei der ersten erfolgreichen Prüfung nach zwei fehlgeschlagenen Verbindungsprüfungen aus. Die erste erfolgreiche Prüfung nach dem Start der App dient als Ausgangspunkt."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=frameo"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "checked_at",
+            "type": "string",
+            "title": {
+              "en": "Check time",
+              "fr": "Date du contrôle",
+              "nl": "Controletijd",
+              "de": "Prüfzeitpunkt"
+            },
+            "example": "2026-11-06T09:30:00Z"
+          }
+        ],
+        "id": "frame_back_online"
+      },
       {
         "title": {
           "en": "A new media item was detected",
@@ -322,6 +365,50 @@
       }
     ],
     "actions": [
+      {
+        "title": {
+          "en": "Display a saved photo",
+          "fr": "Afficher une photo choisie",
+          "nl": "Een gekozen foto weergeven",
+          "de": "Ein ausgewähltes Foto anzeigen"
+        },
+        "titleFormatted": {
+          "en": "Display [[photo]] on the frame",
+          "fr": "Afficher [[photo]] sur le cadre",
+          "nl": "[[photo]] op de fotolijst weergeven",
+          "de": "[[photo]] auf dem Rahmen anzeigen"
+        },
+        "hint": {
+          "en": "Open a photo in the Frameo gallery and save it with a name for Flows. The frame needs to allow photo management. It does not confirm that the photo was displayed.",
+          "fr": "Ouvre une photo dans la galerie Frameo et enregistre-la sous un nom pour les Flows. Le cadre doit autoriser la gestion des photos. Il ne confirme pas l’affichage de la photo.",
+          "nl": "Open een foto in de Frameo-galerij en sla die met een naam voor Flows op. De fotolijst moet fotobeheer toestaan. De lijst bevestigt de weergave niet.",
+          "de": "Öffne ein Foto in der Frameo-Galerie und speichere es unter einem Namen für Flows. Der Rahmen muss die Fotoverwaltung erlauben. Die Anzeige wird vom Rahmen nicht bestätigt."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=frameo"
+          },
+          {
+            "name": "photo",
+            "type": "autocomplete",
+            "title": {
+              "en": "Photo",
+              "fr": "Photo",
+              "nl": "Foto",
+              "de": "Foto"
+            },
+            "placeholder": {
+              "en": "Saved in the gallery",
+              "fr": "Choisie dans la galerie",
+              "nl": "Gekozen in de galerij",
+              "de": "In der Galerie ausgewählt"
+            }
+          }
+        ],
+        "id": "display_saved_photo"
+      },
       {
         "title": {
           "en": "Refresh frame information",

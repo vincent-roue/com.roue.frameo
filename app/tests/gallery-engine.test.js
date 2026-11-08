@@ -174,6 +174,23 @@ test('unsupported preview encodings fail before native invocation and default ga
   assert.equal(result.mime, 'image/png'); assert.deepEqual(Buffer.from(result.data, 'base64'), PNG);
 });
 
+test('video preview explicitly requests a still JPEG and includes only a bounded caption when asked', async t => {
+  const jpeg = Buffer.concat([Buffer.from([255, 216, 255, 224]), Buffer.alloc(20)]);
+  const f = fixture(t, async ({ request }) => {
+    await inspectPrivateOutput(request);
+    assert.equal(request.videoThumbnail, true);
+    assert.equal(request.encoding, 'jpeg');
+    assert.equal(request.previewCaption, true);
+    await fs.writeFile(request.path, jpeg, { flag: 'r+' });
+    return success(nativePreview({ mime: 'image/jpeg', bytes: jpeg.length, caption: ' Photo\u0000 ' + 'é'.repeat(1200) }));
+  });
+  await assert.rejects(f.engine.previewMedia(PEER, MEDIA_ID, { videoThumbnail: true }), { code: 'IMAGE_FORMAT_UNSUPPORTED' });
+  const result = await f.engine.previewMedia(PEER, MEDIA_ID, { videoThumbnail: true, encoding: 'jpeg', includeCaption: true });
+  assert.equal(result.mime, 'image/jpeg');
+  assert.equal(result.caption, 'Photo ' + 'é'.repeat(994));
+  await assertRemoved(f.requests[0].path);
+});
+
 test('preview validates native frame, ID, byte count, image MIME and dimensions and always removes failures', async t => {
   const cases = [
     ['wrong peer', nativePreview({ peer: OTHER_PEER })],

@@ -133,6 +133,7 @@
       'send-add-url',
       'send-caption',
       'send-fit',
+      'send-defer',
       'send-error',
       'send-submit',
       'send-progress',
@@ -342,6 +343,7 @@
         'send-add-url',
         'send-caption',
         'send-fit',
+        'send-defer',
         'send-clear',
       ])
         el[id].disabled = locked;
@@ -386,6 +388,55 @@
       el['send-target'].value = previous || '';
       if (!selectedTarget()) el['send-target'].value = '';
       controls();
+    }
+    function focusEditor(item) {
+      const editor = node('details', 'selection-focus');
+      const summary = node('summary', '', t('focus_edit'));
+      const hint = node('p', 'quiet', t('focus_hint'));
+      hint.id = 'selection-focus-hint-' + item.id;
+      const target = node('button', 'focus-target');
+      target.type = 'button';
+      target.setAttribute('aria-label', t('focus_edit') + ' · ' + item.name);
+      target.setAttribute('aria-describedby', hint.id);
+      const image = node('img');
+      image.alt = '';
+      image.src = item.thumb;
+      const marker = node('span', 'focus-marker');
+      marker.setAttribute('aria-hidden', 'true');
+      const reset = button(t('focus_reset'), () => {
+        if (sending || preparing || destroyed) return;
+        delete item.center;
+        paint();
+      });
+      function paint() {
+        const [x, y] = item.center || [0.5, 0.5];
+        marker.setAttribute('style', 'left:' + x * 100 + '%;top:' + y * 100 + '%');
+        reset.disabled = !item.center;
+      }
+      function move(x, y) {
+        if (sending || preparing || destroyed) return;
+        const unit = value => Math.round(Math.min(1, Math.max(0, value)) * 1000) / 1000;
+        item.center = [unit(x), unit(y)];
+        paint();
+      }
+      target.addEventListener('click', event => {
+        if (event.detail === 0) return;
+        const rect = image.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width;
+        const y = (event.clientY - rect.top) / rect.height;
+        if (x >= 0 && x <= 1 && y >= 0 && y <= 1) move(x, y);
+      });
+      target.addEventListener('keydown', event => {
+        const step = { ArrowLeft: [-0.05, 0], ArrowRight: [0.05, 0], ArrowUp: [0, -0.05], ArrowDown: [0, 0.05] }[event.key];
+        if (!Array.isArray(step)) return;
+        event.preventDefault();
+        const [x, y] = item.center || [0.5, 0.5];
+        move(x + step[0], y + step[1]);
+      });
+      target.append(image, marker);
+      editor.append(summary, hint, target, reset);
+      paint();
+      return editor;
     }
     function renderQueue() {
       el['send-selection'].replaceChildren();
@@ -440,6 +491,7 @@
         remove.disabled = sending || preparing;
         actions.append(remove);
         row.append(thumb, detail, actions);
+        if (item.thumb && !el['send-fit'].checked && !sending) row.append(focusEditor(item));
         el['send-selection'].append(row);
       });
       controls();
@@ -539,6 +591,7 @@
           uncertain: 'uncertain',
           partial: 'partial',
           queued: 'queued',
+          waiting: 'waiting_for_frame',
           running: 'running',
         }[status] || 'uncertain',
       );
@@ -602,9 +655,9 @@
       for (let attempt = 0; attempt < 900 && !destroyed; attempt++) {
         const response = await api('GET', '/transfers/job?jobId=' + encodeURIComponent(id));
         const job = response?.job;
-        if (!job || job.id !== id || !['queued', 'running', ...TERMINAL].includes(job.status))
+        if (!job || job.id !== id || !['queued', 'running', 'waiting', ...TERMINAL].includes(job.status))
           throw Error('JOB_UNVERIFIED');
-        if (TERMINAL.has(job.status)) return job;
+        if (TERMINAL.has(job.status) || (job.status === 'waiting' && job.phase === 'waiting')) return job;
         el['send-progress-text'].textContent = statusText(job.status);
         await sleep();
       }
@@ -694,9 +747,12 @@
       el['send-results'].replaceChildren();
       const selection = [...queue],
         caption = el['send-caption'].value || '',
-        fit = el['send-fit'].checked === true;
+        fit = el['send-fit'].checked === true,
+        defer = el['send-defer'].checked === true;
+      el['send-defer'].checked = false;
       let batchId,
         uncertain = false,
+        waiting = false,
         cancelledUpload = false,
         done = 0,
         activeJob = false;
@@ -752,6 +808,8 @@
               uploadId: upload.id,
               caption,
               fit,
+              ...(!fit && item.center ? { center: item.center } : {}),
+              ...(defer ? { defer } : {}),
             });
           else
             accepted = await api('POST', '/transfers/manual', {
@@ -759,12 +817,14 @@
               url: item.url,
               caption,
               fit,
+              ...(defer ? { defer } : {}),
             });
           if (typeof accepted?.jobId !== 'string') throw Error('JOB_UNVERIFIED');
           const job = await waitJob(accepted.jobId);
           activeJob = false;
           if (destroyed) break;
           renderJob(job, el['send-results'], t('item_image', { index: index + 1 }));
+          if (job.status === 'waiting') waiting = true;
           done++;
           el['send-meter'].value = done;
           if (job.status === 'uncertain' || job.summary?.uncertain > 0) {
@@ -780,7 +840,9 @@
                 ? 'send_uncertain'
                 : stop
                   ? 'send_stopping'
-                  : 'send_done',
+                  : waiting
+                    ? 'send_deferred'
+                    : 'send_done',
           );
       } catch (error) {
         if (!destroyed) {
@@ -1099,6 +1161,7 @@
       listen(el['send-files'], 'change', () => addFiles(el['send-files'].files));
       listen(el['send-add-url'], 'click', addUrl);
       listen(el['send-target'], 'change', controls);
+      listen(el['send-fit'], 'change', renderQueue);
       listen(el['send-form'], 'submit', sendSelection);
       listen(el['send-clear'], 'click', () => {
         if (sending || preparing) return;

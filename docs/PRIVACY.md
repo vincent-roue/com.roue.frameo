@@ -8,6 +8,10 @@ Homey app and device storage keep the pairing identity, frame identifiers and se
 
 Homey uses temporary files to prepare photos for transfer. The app removes them after use and checks for eligible leftovers from interrupted work on startup. Gallery and widget views fetch photo previews as needed and use bounded temporary caches. Inventory checks read metadata and leave the media files on the frame.
 
+If you save a gallery photo for use in Flows, Homey keeps its label and references to the photo and frame. The saved choice does not contain the photo or its thumbnail.
+
+If you enable deferred delivery for a manual send, Homey keeps that photo in a private temporary file until delivery finishes or the 24-hour limit expires. The app holds up to four photos within a total limit of 16 MiB. A restart cancels pending deliveries and cleans up their temporary files.
+
 ## Connections and access
 
 Pairing sends the friend code to Frameo’s pairing service. The app can connect to a frame directly on the local network or use Frameo’s relay. Your selected frames receive the photo and any caption you supply. For a photo sent from a URL, Homey contacts the source server, which receives the request and the requesting network address. Homey and Frameo provide their respective platform and connection services. [Homey security and privacy](https://support.homey.app/hc/en-us/articles/360015685913-Security-and-privacy-in-Homey) · [Frameo privacy policy](https://privacy.frameo.com/)

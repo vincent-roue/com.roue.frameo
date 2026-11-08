@@ -3,11 +3,13 @@
 const { validateMediaId } = require('./frameo-engine');
 const { publicName, coded } = require('./frameo-groups');
 const JOURNAL_KEY = 'frameo_transfer_history';
-const STATUSES = new Set(['queued', 'running', 'succeeded', 'failed', 'uncertain']);
+const STATUSES = new Set(['queued', 'running', 'waiting', 'succeeded', 'failed', 'uncertain']);
+const ACTIVE = new Set(['queued', 'running', 'waiting']);
 const REASONS = new Set(['URL_INVALID', 'IMAGE_TOO_LARGE', 'IMAGE_FORMAT_UNSUPPORTED', 'DOWNLOAD_FAILED', 'FRAME_UNKNOWN',
   'FRAME_UNAVAILABLE', 'CONNECTION_FAILED', 'CONNECTION_REFUSED', 'AUTHENTICATION_FAILED', 'TIMEOUT', 'BUSY', 'QUEUE_FULL',
   'ENGINE_NOT_READY', 'ENGINE_CONFIG_INVALID', 'INVALID_IMAGE', 'SEND_UNCONFIRMED', 'SEND_UNVERIFIED', 'UNKNOWN_ERROR',
-  'ABORTED', 'TRANSFER_CANCELLED', 'TRANSFER_RESTART_QUEUED', 'TRANSFER_RESTART_RUNNING', 'TRANSFER_JOURNAL_FAILED']);
+  'ABORTED', 'TRANSFER_CANCELLED', 'TRANSFER_RESTART_QUEUED', 'TRANSFER_RESTART_RUNNING', 'TRANSFER_JOURNAL_FAILED',
+  'TRANSFER_DEFERRED_LIMIT', 'TRANSFER_DEFERRED_EXPIRED']);
 const REASON_KEYS = { URL_INVALID: 'errors.url_invalid', IMAGE_TOO_LARGE: 'errors.image_too_large',
   IMAGE_FORMAT_UNSUPPORTED: 'errors.image_invalid', INVALID_IMAGE: 'errors.image_invalid', DOWNLOAD_FAILED: 'errors.download_failed',
   FRAME_UNKNOWN: 'errors.frame_unavailable', FRAME_UNAVAILABLE: 'errors.frame_unavailable', CONNECTION_FAILED: 'errors.frame_unavailable',
@@ -15,7 +17,8 @@ const REASON_KEYS = { URL_INVALID: 'errors.url_invalid', IMAGE_TOO_LARGE: 'error
   BUSY: 'errors.busy', QUEUE_FULL: 'errors.busy', ENGINE_NOT_READY: 'errors.not_ready', ENGINE_CONFIG_INVALID: 'errors.not_ready',
   SEND_UNCONFIRMED: 'errors.send_uncertain', SEND_UNVERIFIED: 'errors.send_uncertain', ABORTED: 'errors.transfer_cancelled',
   TRANSFER_CANCELLED: 'errors.transfer_cancelled', TRANSFER_RESTART_QUEUED: 'errors.transfer_restart_queued',
-  TRANSFER_RESTART_RUNNING: 'errors.transfer_restart_running', TRANSFER_JOURNAL_FAILED: 'errors.transfer_journal_failed' };
+  TRANSFER_RESTART_RUNNING: 'errors.transfer_restart_running', TRANSFER_JOURNAL_FAILED: 'errors.transfer_journal_failed',
+  TRANSFER_DEFERRED_LIMIT: 'errors.transfer_deferred_limit', TRANSFER_DEFERRED_EXPIRED: 'errors.transfer_deferred_expired' };
 const reasonCode = error => REASONS.has(error?.code || error) ? error?.code || error : 'UNKNOWN_ERROR';
 const clone = value => JSON.parse(JSON.stringify(value));
 function summary(results) {
@@ -25,6 +28,7 @@ function summary(results) {
 function jobStatus(results) {
   if (results.some(value => value.status === 'running')) return 'running';
   if (results.some(value => value.status === 'queued')) return results.some(value => value.status !== 'queued') ? 'running' : 'queued';
+  if (results.some(value => value.status === 'waiting')) return 'waiting';
   const counts = summary(results);
   return counts.succeeded === counts.total ? 'succeeded' : counts.succeeded ? 'partial' : counts.uncertain ? 'uncertain' : 'failed';
 }
@@ -42,7 +46,7 @@ class TransferJournal {
       const results = job.results.filter(value => typeof value?.frameId === 'string' && /^[a-f0-9]{64}$/i.test(value.frameId)).map(value => {
         let status = STATUSES.has(value.status) ? value.status : 'failed';
         let code = value.code ? reasonCode(value.code) : undefined;
-        if (status === 'queued') { status = 'failed'; code = 'TRANSFER_RESTART_QUEUED'; }
+        if (status === 'queued' || status === 'waiting') { status = 'failed'; code = 'TRANSFER_RESTART_QUEUED'; }
         if (status === 'running') { status = 'uncertain'; code = 'TRANSFER_RESTART_RUNNING'; }
         const result = { frameId: value.frameId, name: publicName(value.name) || 'Frameo', status };
         if (code) result.code = code;
@@ -60,7 +64,7 @@ class TransferJournal {
   async persist() {
     while (this.jobs.length > 50 || Buffer.byteLength(JSON.stringify({ version: 1, jobs: this.jobs })) > 512 * 1024) {
       let index = this.jobs.length - 1;
-      while (index >= 0 && ['queued', 'running'].includes(this.jobs[index].status)) index--;
+      while (index >= 0 && ACTIVE.has(this.jobs[index].status)) index--;
       if (index < 0) throw coded('TRANSFER_JOURNAL_FAILED');
       this.jobs.splice(index, 1);
     }
@@ -87,7 +91,7 @@ class TransferJournal {
   async history() { await this.ready; return { jobs: this.jobs.map(job => this.public(job)) }; }
   async clear() {
     await this.ready; const previous = this.jobs.length;
-    this.jobs = this.jobs.filter(job => ['queued', 'running'].includes(job.status));
+    this.jobs = this.jobs.filter(job => ACTIVE.has(job.status));
     await this.persist(); return { cleared: previous - this.jobs.length };
   }
 }

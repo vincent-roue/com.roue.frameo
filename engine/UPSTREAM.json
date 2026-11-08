@@ -5,9 +5,13 @@
   "sourceDirectory": "vendor/unframeo",
   "localAdditions": [
     "cmd/homey-frameo/main.go",
-    "cmd/homey-frameo/main_test.go"
+    "cmd/homey-frameo/main_test.go",
+    "cmd/homey-frameo/display_test.go",
+    "cmd/homey-frameo/video_thumbnail_test.go",
+    "internal/frameo/display.go",
+    "internal/frameo/display_test.go"
   ],
-  "modifiedUpstreamFiles": ["go.mod", "go.sum"],
+  "modifiedUpstreamFiles": ["go.mod", "go.sum", "internal/frameo/types.go"],
   "build": {
     "toolchain": "go1.27.3",
     "runtimeTarget": "linux/arm64",

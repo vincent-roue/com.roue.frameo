@@ -79,6 +79,28 @@ test('uncertain visibility cannot repeat or authorize a different mutation befor
  assert.equal(f.calls.filter(value=>Array.isArray(value)&&value[0]==='visibility').length,1);
  assert.equal(f.gallery.snapshots.size,0);assert.equal(f.gallery.deleting.size,0);
 });
+test('a visual selection or Flow shortcut targets one stored photo without fetching its bytes', async t => {
+  const f = fixture(t), page = await f.gallery.list({ id: PEER });
+  const body = { id: PEER, mediaId: '2', revision: page.revision };
+  f.app.engine.displayMedia = async (peer, mediaId, { name }) => {
+    f.calls.push(['display', peer, mediaId, name]);
+    return { mediaId, requested: true };
+  };
+  assert.deepEqual(await f.gallery.selectDisplayPhoto(body), { mediaId: '2' });
+  assert.deepEqual(f.calls, ['list']);
+  await assert.rejects(f.gallery.display({ ...body, mediaId: '4' }), { code: 'MEDIA_TYPE_UNSUPPORTED' });
+  await assert.rejects(f.gallery.selectDisplayPhoto({ ...body, revision: 'stale' }), { code: 'GALLERY_STALE' });
+  await assert.rejects(f.gallery.display({ ...body, mediaId: '999' }), { code: 'MEDIA_NOT_FOUND' });
+  f.device.lastInfo.mayManage = false;
+  await assert.rejects(f.gallery.selectDisplayPhoto(body), { code: 'PERMISSION_REQUIRED' });
+  await assert.rejects(f.gallery.display(body), { code: 'PERMISSION_REQUIRED' });
+  f.device.lastInfo.mayManage = true;
+  assert.deepEqual(await f.gallery.display(body), { mediaId: '2', requested: true });
+  f.gallery.changed(PEER);
+  assert.deepEqual(await f.gallery.displayPhoto(PEER, '2'), { mediaId: '2', requested: true });
+  assert.deepEqual(f.calls, ['list', ['display', PEER, '2', 'Sender'], ['display', PEER, '2', 'Sender']]);
+  assert.deepEqual(f.events, []);
+});
 test('gallery filters and date sorts are deterministic, missing dates last, and cursor options cannot change',async t=>{
  const f=fixture(t);let page=await f.gallery.list({id:PEER,type:'photo',visibility:'visible',sort:'received_desc',limit:1});
  assert.equal(page.total,2);assert.equal(page.items[0].id,'2');

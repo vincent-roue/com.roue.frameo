@@ -19,6 +19,7 @@ function fixture(t, options = {}) {
       async prepareUrl(value) { calls.push(['prepare', 'url']); if (options.prepare) await options.prepare(value); return {}; },
       async prepareImage(image) { calls.push(['prepare', 'image']); await image.getStream(); return {}; },
       async prepareBase64(data) { calls.push(['prepare', 'base64']); if (options.prepare) await options.prepare(data); return {}; },
+      async preparedSize() { return options.size || 32; },
       async disposePrepared() { calls.push(['dispose']); },
     },
     photoReceived: { async trigger(device, tokens) { events.push(['received', device.getData().id, tokens]); if (options.trigger) await options.trigger(); } },
@@ -27,7 +28,7 @@ function fixture(t, options = {}) {
   devices = [A, B, C].map((id, index) => ({ stopped: false, operation: null, getData: () => ({ id }), getName: () => ['Salon', 'Cuisine', 'Bureau'][index],
     async sendPrepared(handle, details) { calls.push(['send', id, handle, details]);
       return options.send ? options.send(id, details) : { confirmed: true, at: '2026-11-03T12:00:00Z', mediaId: '9223372036854775807' }; } }));
-  app.groups = new FrameoGroups(app); app.transfers = new FrameoTransfers(app, { flowTimeoutMs: 20 });
+  app.groups = new FrameoGroups(app); app.transfers = new FrameoTransfers(app, { flowTimeoutMs: 20, ...options.timing });
   t.after(async () => { app.stopping = true; await app.transfers.close(); });
   return { app, saved, events, calls, logs, get devices() { return devices; }, remove(id) { devices = devices.filter(device => device.getData().id !== id); } };
 }
@@ -45,6 +46,122 @@ test('groups preserve stable IDs, deduplicate peers, allow overlaps and empty sa
   await assert.rejects(f.app.groups.save({ name: 'Inconnu', frameIds: ['ee'.repeat(32)] }), { code: 'GROUP_FRAME_UNKNOWN' });
   const restored = new FrameoGroups(f.app); assert.deepEqual(await restored.list(), await f.app.groups.list());
   assert.equal(f.saved.get(GROUPS_KEY).groups.length, 2);
+});
+
+const offlineBeforeSend = () => Object.assign(new Error('offline before transfer'), { code: 'CONNECTION_FAILED', beforeSend: true });
+async function waitUntil(check) {
+  for (let attempt = 0; attempt < 100; attempt++) {
+    if (check()) return;
+    await new Promise(resolve => setTimeout(resolve, 1));
+  }
+  assert.fail('Transfer never reached the expected state');
+}
+
+test('opt-in deferral keeps one prepared photo and resumes only the pending frame', async t => {
+  let online = false;
+  const f = fixture(t, { send: id => {
+    if (id === B && !online) throw offlineBeforeSend();
+    return { confirmed: true, mediaId: '123' };
+  } });
+  const group = (await f.app.groups.save({ name: 'Two frames', frameIds: [A, B] })).group;
+  const { jobId } = await f.app.transfers.enqueueManual({ groupId: group.id, data: 'AQ==', mime: 'image/jpeg', defer: true,
+    center: [0.25, 0.75], caption: 'private caption' });
+  await waitUntil(() => f.app.transfers.runtime.get(jobId)?.retryAt != null);
+  const waiting = (await f.app.transfers.get(jobId)).job;
+  assert.equal(waiting.phase, 'waiting'); assert.equal(waiting.status, 'waiting');
+  assert.deepEqual(waiting.results.map(result => result.status), ['succeeded', 'waiting']);
+  assert.equal(f.app.activeTransfer, false);
+  assert.equal(f.calls.filter(([kind]) => kind === 'dispose').length, 0);
+  assert.equal(f.events.filter(([kind]) => kind === 'failed').length, 0);
+  await f.app.transfers.clear();
+  assert.equal((await f.app.transfers.get(jobId)).job.status, 'waiting');
+  assert(!JSON.stringify(f.saved.get(JOURNAL_KEY)).includes('private caption'));
+
+  online = true;
+  f.app.transfers.frameReachable(B);
+  await waitUntil(() => !f.app.transfers.runtime.has(jobId));
+  assert.equal((await f.app.transfers.get(jobId)).job.status, 'succeeded');
+  const attempts = f.calls.filter(([kind]) => kind === 'send');
+  assert.deepEqual(attempts.map(([, id]) => id), [A, B, B]);
+  for (const [, , handle, options] of attempts) {
+    assert.equal(handle, attempts[0][2]);
+    assert.deepEqual(options.center, [0.25, 0.75]);
+  }
+  assert.equal(f.calls.filter(([kind]) => kind === 'prepare').length, 1);
+  assert.equal(f.calls.filter(([kind]) => kind === 'dispose').length, 1);
+});
+
+test('default, unproved connection failure and uncertain send never enter deferred delivery', async t => {
+  const f = fixture(t, { send: id => {
+    if (id === A) throw offlineBeforeSend();
+    if (id === B) throw Object.assign(new Error('unproved'), { code: 'CONNECTION_FAILED' });
+    throw Object.assign(new Error('uncertain'), { code: 'SEND_UNVERIFIED', beforeSend: true });
+  } });
+  for (const [frameId, defer, status] of [[A, false, 'failed'], [B, true, 'failed'], [C, true, 'uncertain']]) {
+    const { jobId } = await f.app.transfers.enqueueManual({ frameId, url: 'https://example.test/a.jpg', defer });
+    await assert.rejects(f.app.transfers.waitFor(jobId), { code: 'TRANSFER_INCOMPLETE' });
+    assert.equal((await f.app.transfers.get(jobId)).job.status, status);
+    f.app.transfers.frameReachable(frameId);
+  }
+  assert.deepEqual(f.calls.filter(([kind]) => kind === 'send').map(([, id]) => id), [A, B, C]);
+});
+
+test('retained photos obey the aggregate byte cap and expire without launching another transfer', async t => {
+  let now = Date.parse('2026-11-06T10:00:00Z');
+  const foregroundReceipt = deferred();
+  let holdForeground = false;
+  const f = fixture(t, { size: 8 * 1024 * 1024, timing: { now: () => now }, send: () => {
+    if (holdForeground) return foregroundReceipt.promise;
+    throw offlineBeforeSend();
+  } });
+  const ids = [];
+  for (const frameId of [A, B]) {
+    const { jobId } = await f.app.transfers.enqueueManual({ frameId, url: 'https://example.test/a.jpg', defer: true });
+    ids.push(jobId);
+    await waitUntil(() => f.app.transfers.runtime.get(jobId)?.retryAt != null);
+  }
+  const overflow = await f.app.transfers.enqueueManual({ frameId: C, url: 'https://example.test/a.jpg', defer: true });
+  await assert.rejects(f.app.transfers.waitFor(overflow.jobId), { code: 'TRANSFER_INCOMPLETE' });
+  assert.equal((await f.app.transfers.get(overflow.jobId)).job.results[0].code, 'TRANSFER_DEFERRED_LIMIT');
+  assert.equal(f.calls.filter(([kind]) => kind === 'dispose').length, 1);
+  holdForeground = true;
+  const foreground = await f.app.transfers.enqueueManual({ frameId: C, url: 'https://example.test/a.jpg' });
+  await waitUntil(() => f.calls.filter(([kind]) => kind === 'send').length === 4);
+  now += 24 * 60 * 60 * 1000;
+  f.app.transfers.resumeWaiting();
+  await waitUntil(() => ids.every(id => !f.app.transfers.runtime.has(id)));
+  for (const id of ids) assert.equal((await f.app.transfers.get(id)).job.results[0].code, 'TRANSFER_DEFERRED_EXPIRED');
+  assert.equal(f.calls.filter(([kind]) => kind === 'send').length, 4);
+  assert.equal(f.calls.filter(([kind]) => kind === 'dispose').length, 3);
+  foregroundReceipt.resolve({ confirmed: true, mediaId: '123' });
+  await f.app.transfers.waitFor(foreground.jobId);
+});
+
+test('shutdown during the waiting journal write cancels the job and releases its photo', async t => {
+  const atWrite = deferred(), unblock = deferred();
+  const f = fixture(t, { send: () => { throw offlineBeforeSend(); }, onSave: async (key, value) => {
+    if (key === JOURNAL_KEY && value.jobs[0]?.phase === 'waiting') {
+      atWrite.resolve(); await unblock.promise;
+    }
+  } });
+  const { jobId } = await f.app.transfers.enqueueManual({ frameId: A, url: 'https://example.test/a.jpg', defer: true });
+  await atWrite.promise;
+  const close = f.app.transfers.close();
+  unblock.resolve(); await close;
+  const result = (await f.app.transfers.get(jobId)).job.results[0];
+  assert.equal(result.status, 'failed'); assert.equal(result.code, 'TRANSFER_CANCELLED');
+  assert.equal(f.calls.filter(([kind]) => kind === 'dispose').length, 1);
+  assert.equal(f.app.transfers.runtime.size, 0);
+});
+
+test('restart marks only waiting recipients as cancelled before transmission and never replays them', async t => {
+  const f = fixture(t, { send: () => { throw offlineBeforeSend(); } });
+  const { jobId } = await f.app.transfers.enqueueManual({ frameId: A, url: 'https://example.test/a.jpg', defer: true });
+  await waitUntil(() => f.app.transfers.runtime.get(jobId)?.retryAt != null);
+  const restarted = fixture(t, { saved: new Map(f.saved) });
+  const result = (await restarted.app.transfers.get(jobId)).job.results[0];
+  assert.equal(result.status, 'failed'); assert.equal(result.code, 'TRANSFER_RESTART_QUEUED');
+  assert.deepEqual(restarted.calls, []);
 });
 
 test('one group photo is prepared once, snapshots survive edits, and other receivers continue after a failure', async t => {

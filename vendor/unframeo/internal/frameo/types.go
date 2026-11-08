@@ -61,6 +61,7 @@ const (
 	// true moved it back. Hidden photos stay in the listing, marked hidden,
 	// which is what makes this observable at all.
 	TypeChangeMediaVisibility = 33
+	TypeDisplayMedia          = 35
 
 	// TypeGetMedia asks the frame to send one stored photo back. The number
 	// came from a decompile of the app rather than from a probe:
@@ -262,6 +263,8 @@ func typeName(t int32) string {
 		return "DeleteMedia"
 	case TypeChangeMediaVisibility:
 		return "ChangeMediaVisibility"
+	case TypeDisplayMedia:
+		return "DisplayMedia"
 	case TypeCalendarStatuses:
 		return "CalendarStatuses"
 	default:

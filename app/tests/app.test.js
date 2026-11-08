@@ -25,7 +25,7 @@ async function until(predicate) {
   assert.fail('The simulated background operation did not settle');
 }
 
-function fixture({ probeError, onSend, onTrigger } = {}) {
+function fixture({ probeError, onSend, onTrigger, packagedEngine = false } = {}) {
   const cards = new Map();
   const events = [];
   const sends = [];
@@ -67,7 +67,7 @@ function fixture({ probeError, onSend, onTrigger } = {}) {
   const loaded = { exports: {} };
   const localRequire = (name) => {
     if (name === 'homey') return { App: class {} };
-    if (name === './lib/frameo-engine') return { FrameoEngine: FakeEngine };
+    if (name === './lib/frameo-engine' && !packagedEngine) return { FrameoEngine: FakeEngine };
     if (name.startsWith('./')) return require(path.resolve(APP_DIRECTORY, name));
     return require(name);
   };
@@ -109,6 +109,20 @@ function fixture({ probeError, onSend, onTrigger } = {}) {
   };
   return { app, device, cards, events, sends, engineCalls, logs, widgetListeners };
 }
+
+test('an unsupported runtime stays inspectable and rejects pairing with its own message', {
+  skip: process.platform === 'linux' && process.arch === 'arm64',
+}, async t => {
+  const f = fixture({ packagedEngine: true });
+  t.after(() => f.app.onUninit());
+  await f.app.onInit();
+  const status = f.app.getPublicStatus();
+  assert.equal(status.ready, false);
+  assert.equal(status.error, 'UNSUPPORTED_RUNTIME');
+  await assert.rejects(f.app.pairFrame('1234567890'), {
+    code: 'UNSUPPORTED_RUNTIME', message: 'errors.unsupported_runtime',
+  });
+});
 
 test('widget frame selector lists only known app devices without reading photos or requiring global device access', async t => {
   const f = fixture(); t.after(() => f.app.onUninit());
@@ -351,4 +365,33 @@ test('public status still responds when the Homey jail denies resident memory me
     assert.equal(status.performance.operations[0].count, 1);
     assert(!JSON.stringify(status).includes('uv_resident_set_memory'));
   } finally { process.memoryUsage = original; }
+});
+
+test('display Flow resolves the named gallery choice only for the selected frame', async t => {
+  const f = fixture(); t.after(() => f.app.onUninit()); await f.app.onInit();
+  const mediaId = '-9223372036854775808';
+  const selection = { id: PEER, mediaId, revision: 'gallery-revision', name: 'Holiday sunset' };
+  f.app.gallery.selectDisplayPhoto = async candidate => {
+    assert.equal(candidate.revision, selection.revision);
+    return { mediaId };
+  };
+  await f.app.displayPhotos.save(selection);
+  const card = f.cards.get('display_saved_photo');
+  const [choice] = await card.autocomplete('sunset', { device: f.device });
+  assert.deepEqual(Object.keys(choice).sort(), ['id', 'name']);
+  assert.equal(choice.name, 'Holiday sunset');
+  const other = { getData: () => ({ id: 'cd'.repeat(32) }) };
+  assert.deepEqual(await card.autocomplete('', { device: other }), []);
+  await assert.rejects(card.run({ device: other, photo: choice }), { code: 'DISPLAY_PHOTO_NOT_FOUND' });
+  const requests = [];
+  f.app.gallery.displayPhoto = async (frameId, id) => {
+    requests.push({ frameId, id }); return { mediaId: id, requested: true };
+  };
+  await f.app.displayPhotos.save({ ...selection, name: 'Renamed sunset' });
+  assert.equal((await card.autocomplete('renamed', { device: f.device }))[0].id, choice.id);
+  assert.equal(await card.run({ device: f.device, photo: choice }), true);
+  assert.deepEqual(requests, [{ frameId: PEER, id: mediaId }]);
+  f.app.gallery.displayPhoto = async () => { throw Object.assign(new Error('Gone'), { code: 'MEDIA_NOT_FOUND' }); };
+  await assert.rejects(card.run({ device: f.device, photo: choice }), { code: 'MEDIA_NOT_FOUND' });
+  assert.deepEqual(await card.autocomplete('', { device: f.device }), []);
 });

@@ -1,0 +1,33 @@
+{
+  "title": {
+    "en": "Display a saved photo",
+    "fr": "Afficher une photo choisie",
+    "nl": "Een gekozen foto weergeven",
+    "de": "Ein ausgewähltes Foto anzeigen"
+  },
+  "titleFormatted": {
+    "en": "Display [[photo]] on the frame",
+    "fr": "Afficher [[photo]] sur le cadre",
+    "nl": "[[photo]] op de fotolijst weergeven",
+    "de": "[[photo]] auf dem Rahmen anzeigen"
+  },
+  "hint": {
+    "en": "Open a photo in the Frameo gallery and save it with a name for Flows. The frame needs to allow photo management. It does not confirm that the photo was displayed.",
+    "fr": "Ouvre une photo dans la galerie Frameo et enregistre-la sous un nom pour les Flows. Le cadre doit autoriser la gestion des photos. Il ne confirme pas l’affichage de la photo.",
+    "nl": "Open een foto in de Frameo-galerij en sla die met een naam voor Flows op. De fotolijst moet fotobeheer toestaan. De lijst bevestigt de weergave niet.",
+    "de": "Öffne ein Foto in der Frameo-Galerie und speichere es unter einem Namen für Flows. Der Rahmen muss die Fotoverwaltung erlauben. Die Anzeige wird vom Rahmen nicht bestätigt."
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=frameo"
+    },
+    {
+      "name": "photo",
+      "type": "autocomplete",
+      "title": { "en": "Photo", "fr": "Photo", "nl": "Foto", "de": "Foto" },
+      "placeholder": { "en": "Saved in the gallery", "fr": "Choisie dans la galerie", "nl": "Gekozen in de galerij", "de": "In der Galerie ausgewählt" }
+    }
+  ]
+}

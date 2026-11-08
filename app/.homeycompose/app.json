@@ -1,7 +1,7 @@
 {
   "id": "com.roue.frameo",
-  "version": "0.13.2",
-  "source": "https://github.com/vincent-roue/com.roue.frameo/tree/v0.13.2",
+  "version": "0.14.0",
+  "source": "https://github.com/vincent-roue/com.roue.frameo/tree/v0.14.0",
   "homeyCommunityTopicId": 161844,
   "compatibility": ">=12.9.0",
   "sdk": 3,
@@ -62,6 +62,14 @@
     "galleryPreview": {
       "method": "POST",
       "path": "/gallery/preview"
+    },
+    "galleryDisplay": {
+      "method": "POST",
+      "path": "/gallery/display"
+    },
+    "gallerySaveFlowPhoto": {
+      "method": "POST",
+      "path": "/gallery/flow-photo"
     },
     "galleryDelete": {
       "method": "POST",

@@ -8,6 +8,7 @@ const CODES = {
   MEDIA_NOT_FOUND: 'gallery.errors.not_found', MEDIA_TYPE_UNSUPPORTED: 'gallery.errors.unsupported',
   INVALID_MEDIA_ID: 'gallery.errors.invalid', PREVIEW_REQUIRED: 'gallery.errors.preview_required',
   DELETE_UNVERIFIED: 'gallery.errors.delete_uncertain', VISIBILITY_UNVERIFIED: 'gallery.errors.visibility_uncertain',
+  DISPLAY_UNVERIFIED: 'gallery.errors.display_uncertain',
   MEDIA_TOO_LARGE: 'gallery.errors.too_large', IMAGE_FORMAT_UNSUPPORTED: 'gallery.errors.unsupported',
   TOO_MANY_MEDIA: 'gallery.errors.too_many', BUSY: 'errors.busy', QUEUE_FULL: 'errors.busy',
   ENGINE_NOT_READY: 'errors.not_ready', TIMEOUT: 'errors.timeout', FRAME_UNAVAILABLE: 'errors.frame_unavailable',
@@ -149,12 +150,53 @@ class FrameoGallery {
       const snapshot = this.snapshot(id, revision);
       const item = snapshot.items.find(item => item.id === mediaId);
       if (!item) throw this.fail('MEDIA_NOT_FOUND');
-      if (!['photo', 'greeting'].includes(item.type)) throw this.fail('MEDIA_TYPE_UNSUPPORTED');
-      const preview = await this.app.engine.previewMedia(id, mediaId, { name: this.frame(device).senderName });
+      const video = item.type === 'video';
+      if (!video && !['photo', 'greeting'].includes(item.type)) throw this.fail('MEDIA_TYPE_UNSUPPORTED');
+      const preview = await this.app.engine.previewMedia(id, mediaId, { name: this.frame(device).senderName,
+        includeCaption: true, ...(video ? { videoThumbnail: true, encoding: 'jpeg' } : {}) });
       this.ensureReadable(device, id);
       if (this.snapshot(id, snapshot.revision) !== snapshot || this.deleting.has(id)) throw this.fail('GALLERY_STALE');
-      snapshot.previewed.add(mediaId);
+      if (!video) snapshot.previewed.add(mediaId);
       return preview;
+    });
+  }
+  displaySelection(device, id, mediaId, revision) {
+    if (typeof revision !== 'string') throw this.fail('GALLERY_INVALID_REQUEST');
+    this.ensureReadable(device, id);
+    if (device.lastInfo?.mayManage !== true) throw this.fail('PERMISSION_REQUIRED');
+    const item = this.snapshot(id, revision).items.find(item => item.id === mediaId);
+    if (!item) throw this.fail('MEDIA_NOT_FOUND');
+    if (item.type !== 'photo') throw this.fail('MEDIA_TYPE_UNSUPPORTED');
+  }
+  async selectDisplayPhoto({ id, mediaId, revision }) {
+    return this.safe(async () => {
+      validateMediaId(mediaId);
+      await this.ready();
+      const device = this.device(id);
+      this.displaySelection(device, id, mediaId, revision);
+      return { mediaId };
+    });
+  }
+  display({ id, mediaId, revision }) {
+    if (typeof revision !== 'string') return Promise.reject(this.fail('GALLERY_INVALID_REQUEST'));
+    return this.displayPhoto(id, mediaId, { revision });
+  }
+  async displayPhoto(id, mediaId, { revision } = {}) {
+    return this.safe(async () => {
+      validateMediaId(mediaId);
+      await this.ready();
+      const device = this.device(id);
+      if (device.stopped) throw this.fail('FRAME_UNAVAILABLE');
+      if (this.deleting.has(id)) throw this.fail('BUSY');
+      if (revision !== undefined) this.displaySelection(device, id, mediaId, revision);
+      this.deleting.add(id);
+      try {
+        // The native operation rechecks live permissions and photo membership
+        // on the same connection before it sends the display request.
+        const result = await this.app.engine.displayMedia(id, mediaId, { name: this.frame(device).senderName });
+        if (result?.mediaId !== mediaId || result.requested !== true) throw this.fail('DISPLAY_UNVERIFIED');
+        return { mediaId, requested: true };
+      } finally { this.deleting.delete(id); }
     });
   }
   notify(id, mediaId, kind, visible) {

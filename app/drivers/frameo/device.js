@@ -23,9 +23,11 @@ const PRESENTATION_FIELDS = Object.freeze({
   frameo_connection: 'frameo_connection_route', frameo_permissions: 'frameo_granted_permissions',
 });
 const MOVABLE_PRESENTATION_FIELDS = Object.freeze(['frameo_latest_received', 'frameo_last_communication', ...Object.values(PRESENTATION_FIELDS)]);
+const REACHABILITY_ERRORS = new Set(['FRAME_UNAVAILABLE', 'CONNECTION_FAILED', 'CONNECTION_REFUSED', 'TIMEOUT', 'ETIMEDOUT']);
 
 const ERROR_KEYS = Object.freeze({
   ENGINE_NOT_READY: 'errors.not_ready',
+  UNSUPPORTED_RUNTIME: 'errors.unsupported_runtime',
   FRAME_UNAVAILABLE: 'errors.frame_unavailable',
   CONNECTION_FAILED: 'errors.frame_unavailable',
   CONNECTION_REFUSED: 'errors.frame_unavailable',
@@ -86,6 +88,7 @@ class FrameoDevice extends Homey.Device {
     this.inventoryPublication = Promise.resolve();
     this.communicationPublication = Promise.resolve();
     this.refreshScheduler = null; this.lastInfoReadAt = null;
+    this.reachabilityKnown = false; this.reachabilityFailures = 0;
     const cached = this.getStoreValue('frame_metadata');
     const validCache = cached?.info && typeof cached.checkedAt === 'string' && Number.isFinite(Date.parse(cached.checkedAt));
     this.lastInfo = validCache ? normalizeFrameInfo(cached.info, this.getName()) : null;
@@ -122,6 +125,7 @@ class FrameoDevice extends Homey.Device {
     if (this.accessMode() !== 'manage') await this.homey.app.mediaMonitor?.invalidate(this);
     this.lastInventory = await this.homey.app.mediaMonitor?.restore(this) || null;
     await this.displayInventory();
+    if (this.homey.app.runtimeStatus?.error === 'UNSUPPORTED_RUNTIME') return;
     this.refreshScheduler = new FrameoRefreshScheduler(this, {
       refresh: ({ signal, initial }) => this.refreshDetails({ background: true, inventoryOnly: initial, signal }),
       isBusy: () => (this.homey.app.getDevices?.() || [this])
@@ -427,6 +431,7 @@ class FrameoDevice extends Homey.Device {
     return {
       caption: options?.caption || '',
       fit: options?.fit === true,
+      ...(options?.center && options?.fit !== true ? { center: options.center } : {}),
       name: this.getSetting('sender_name') || 'Homey',
       ...(options?.signal ? { signal: options.signal } : {}),
     };
@@ -486,12 +491,16 @@ class FrameoDevice extends Homey.Device {
           await this.setAvailable().catch(() => {});
           const doneKey = kind === 'permission' ? 'device.permission_granted' : (kind === 'send' ? 'device.received' : 'device.reachable');
           await this.updateCapability('frameo_status', this.homey.__(doneKey));
+          if (kind === 'refresh' && result) this.onReachabilityConfirmed();
         }
         return result;
       } catch (error) {
         const fallbackKey = kind === 'permission' ? 'errors.permission_failed' : (kind === 'send' ? 'errors.send_failed' : 'errors.refresh_failed');
         const message = this.homey.__(ERROR_KEYS[error?.code] || fallbackKey);
         if (!this.stopped) {
+          if (kind === 'refresh' && this.reachabilityKnown && REACHABILITY_ERRORS.has(error?.code) && error.details?.started !== false) {
+            this.reachabilityFailures = Math.min(2, this.reachabilityFailures + 1);
+          }
           this.lastError = message;
           await this.updateCapability('frameo_status', message).catch(() => {});
           // Invalid input does not prove that the frame itself is unavailable.
@@ -501,12 +510,31 @@ class FrameoDevice extends Homey.Device {
         }
         const safeError = new Error(message);
         safeError.code = (ERROR_KEYS[error?.code] || error?.code === 'SEND_UNCONFIRMED') ? error.code : 'FRAMEO_OPERATION_FAILED';
+        if (kind === 'send' && error?.details?.nativeResponse === true && error.details.attempted === false) safeError.beforeSend = true;
         throw safeError;
       } finally {
         if (this.operation === operation) this.operation = null;
       }
     })();
     return operation.promise;
+  }
+
+  onReachabilityConfirmed() {
+    const recovered = this.reachabilityKnown && this.reachabilityFailures >= 2;
+    this.reachabilityKnown = true;
+    this.reachabilityFailures = 0;
+    const checkedAt = this.lastChecked;
+    // Let runOperation release the frame before consumers start other work.
+    queueMicrotask(() => {
+      if (this.stopped || this.homey.app.stopping) return;
+      if (recovered) {
+        void Promise.resolve().then(() => {
+          if (!this.stopped && !this.homey.app.stopping) return this.homey.app.frameBackOnline?.trigger(this, { checked_at: checkedAt });
+        })
+          .catch(() => this.error('Frameo reachability Flow could not be triggered.'));
+      }
+      this.homey.app.transfers?.frameReachable?.(this.getData().id);
+    });
   }
 
   publicStatus() {
@@ -560,6 +588,7 @@ class FrameoDevice extends Homey.Device {
     this.homey.app.engine?.invalidateMediaIndex?.(this.getData().id);
     this.stopped = true; await this.preview?.close();
     try { await this.homey.app.groups?.removeFrame(this.peer()); } catch { this.error('Frameo group references could not be removed.'); }
+    try { await this.homey.app.displayPhotos?.remove(this.getData().id); } catch { this.error('Frameo display photo references could not be removed.'); }
   }
   async onUninit() {
     this.refreshScheduler?.close(); this.inventoryGeneration++;
