@@ -71,7 +71,7 @@
     "code_expired": "Ce code n’a pas été accepté. Générez un nouveau code sur le cadre.",
     "frame_unavailable": "Le cadre est injoignable. Vérifiez son alimentation et sa connexion au réseau.",
     "not_ready": "Frameo démarre. Réessayez dans quelques instants.",
-    "unsupported_runtime": "Cette version de Frameo nécessite Linux ARM64, comme sur Homey Pro (2023).",
+    "unsupported_runtime": "Cette version de Frameo nécessite Linux ARM64 ou AMD64. Elle a été validée sur Homey Pro (2023).",
     "timeout": "Le cadre n’a pas répondu à temps. Réessayez.",
     "busy": "Une opération est déjà en cours. Attendez qu’elle se termine.",
     "session_closed": "La fenêtre a été fermée. Recommencez l’ajout du cadre.",

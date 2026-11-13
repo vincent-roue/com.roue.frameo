@@ -35,11 +35,13 @@ try {
     & $GoExecutable build -trimpath -buildvcs=false -ldflags '-s -w' -o (Join-Path $outputRoot 'homey-frameo-windows-amd64.exe') ./cmd/homey-frameo
     if ($LASTEXITCODE -ne 0) { throw 'Host engine build failed.' }
     $env:GOOS = 'linux'
-    $env:GOARCH = 'arm64'
-    & $GoExecutable build -trimpath -buildvcs=false -ldflags '-s -w' -o (Join-Path $outputRoot 'homey-frameo-linux-arm64') ./cmd/homey-frameo
-    if ($LASTEXITCODE -ne 0) { throw 'Homey engine build failed.' }
+    foreach ($architecture in @('arm64', 'amd64')) {
+        $env:GOARCH = $architecture
+        & $GoExecutable build -trimpath -buildvcs=false -ldflags '-s -w' -o (Join-Path $outputRoot "homey-frameo-linux-$architecture") ./cmd/homey-frameo
+        if ($LASTEXITCODE -ne 0) { throw "Homey engine build failed for $architecture." }
+    }
     $hashes = @{}
-    foreach ($name in @('homey-frameo-windows-amd64.exe', 'homey-frameo-linux-arm64')) {
+    foreach ($name in @('homey-frameo-windows-amd64.exe', 'homey-frameo-linux-arm64', 'homey-frameo-linux-amd64')) {
         $hashes[$name] = (Get-FileHash -LiteralPath (Join-Path $outputRoot $name) -Algorithm SHA256).Hash.ToLowerInvariant()
     }
     $hashes | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $outputRoot 'sha256.json') -Encoding utf8

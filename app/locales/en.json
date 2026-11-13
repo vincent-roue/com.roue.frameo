@@ -71,7 +71,7 @@
     "code_expired": "This friend code was not accepted. Generate a new code on the frame and try again.",
     "frame_unavailable": "The frame could not be reached. Check its power and network connection, then refresh.",
     "not_ready": "Frameo is still starting. Please try again in a moment.",
-    "unsupported_runtime": "This version of Frameo requires Linux ARM64, as used by Homey Pro (2023).",
+    "unsupported_runtime": "This version of Frameo requires Linux ARM64 or AMD64. It has been validated on Homey Pro (2023).",
     "timeout": "The frame did not respond in time. Please try again.",
     "busy": "Another operation is in progress. Please wait for it to finish.",
     "session_closed": "The connection window was closed. Start adding the frame again.",

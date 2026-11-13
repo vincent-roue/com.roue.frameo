@@ -16,6 +16,10 @@ const MAX_CONFIG_BYTES = 128 * 1024;
 const MAX_PROCESS_REQUEST = 512 * 1024;
 const MAX_PROCESS_OUTPUT = 2 * 1024 * 1024;
 const PEER = /^[0-9a-f]{64}$/i;
+const RUNTIME_BINARIES = new Map([
+  ['linux/arm64', 'homey-frameo-linux-arm64'],
+  ['linux/x64', 'homey-frameo-linux-amd64'],
+]);
 const OPERATION_TIMEOUTS = { probe: 5000, pair: 80000, info: 30000, permission: 80000, send: 155000,
   listMedia: 25000, getMedia: 30000, deleteMedia: 30000, setMediaVisible: 30000, displayMedia: 30000 };
 class FrameoError extends Error {
@@ -218,9 +222,10 @@ class FrameoEngine {
     mediaIndexCache = new MediaIndexCache(), metrics = new EngineMetrics() } = {}) {
     if (!homey?.settings?.get || !homey?.settings?.set) throw new TypeError('Homey settings required');
     this.#homey = homey;
-    this.#binaryPath = binaryPath || path.join(__dirname, '..', 'bin', 'homey-frameo-linux-arm64');
+    const binaryName = RUNTIME_BINARIES.get(`${process.platform}/${process.arch}`);
+    this.#binaryPath = binaryPath || (binaryName ? path.join(__dirname, '..', 'bin', binaryName) : null);
     this.#runner = runner;
-    this.#unsupportedRuntime = runner === runEngineProcess && (process.platform !== 'linux' || process.arch !== 'arm64');
+    this.#unsupportedRuntime = runner === runEngineProcess && !binaryName;
     this.#fetch = fetchImpl;
     this.#maxBytes = maxBytes;
     this.#maxQueued = maxQueued;

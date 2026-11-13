@@ -11,11 +11,22 @@
     "internal/frameo/display.go",
     "internal/frameo/display_test.go"
   ],
-  "modifiedUpstreamFiles": ["go.mod", "go.sum", "internal/frameo/types.go"],
+  "modifiedUpstreamFiles": [
+    "go.mod",
+    "go.sum",
+    "internal/frameo/types.go"
+  ],
   "build": {
     "toolchain": "go1.27.3",
-    "runtimeTarget": "linux/arm64",
     "CGO_ENABLED": "0",
-    "flags": ["-trimpath", "-buildvcs=false", "-ldflags=-s -w"]
+    "flags": [
+      "-trimpath",
+      "-buildvcs=false",
+      "-ldflags=-s -w"
+    ],
+    "runtimeTargets": [
+      "linux/arm64",
+      "linux/amd64"
+    ]
   }
 }

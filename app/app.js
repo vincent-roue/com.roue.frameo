@@ -1,6 +1,5 @@
 'use strict';
 const Homey = require('homey');
-const path = require('node:path');
 const { FrameoEngine } = require('./lib/frameo-engine');
 const { FrameoGallery } = require('./lib/frameo-gallery');
 const { PreviewCache } = require('./lib/device-preview');
@@ -36,7 +35,7 @@ module.exports = class FrameoApp extends Homey.App {
     this.activeTransfer = false;
     this.permissionTask = null;
     this.stopping = false;
-    this.engine = new FrameoEngine({ homey: this.homey, binaryPath: path.join(__dirname, 'bin', 'homey-frameo-linux-arm64') });
+    this.engine = new FrameoEngine({ homey: this.homey });
     this.gallery = new FrameoGallery(this);
     this.displayPhotos = new FrameoDisplayPhotos(this);
     this.displayPhotos.ready.catch(() => this.log('Saved Frameo display photos could not be loaded.'));

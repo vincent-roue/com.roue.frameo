@@ -20,7 +20,7 @@ const SAFE_CODES = new Set([
 ]);
 const STATES = new Set(['queued', 'running', 'succeeded', 'failed', 'uncertain', 'partial']);
 const OS = new Set(['linux', 'darwin', 'win32']);
-const ARCH = new Set(['arm64', 'x64', 'arm', 'ia32']);
+const ARCH = new Set(['arm64', 'amd64', 'x64', 'arm', 'ia32']);
 const ENGINE = new Set(['unframeo', 'unframeo-go', 'homey-frameo', 'frameo-go']);
 
 function read(object, key) {

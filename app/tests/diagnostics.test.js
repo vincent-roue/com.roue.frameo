@@ -157,6 +157,16 @@ function fixture() {
   return { app, device, info, job };
 }
 
+test('AMD64 diagnostics keep the Go architecture readable through browser export', () => {
+  const { app } = fixture();
+  app.runtimeStatus.architecture = 'x64';
+  app.runtimeStatus.engine.goarch = 'amd64';
+  const report = getReport(app, { now, memoryUsage });
+  assert.equal(report.runtime.architecture, 'x64');
+  assert.equal(report.versions.engine.architecture, 'amd64');
+  assert.equal(JSON.parse(serialize(report)).versions.engine.architecture, 'amd64');
+});
+
 test('diagnostics constructs a strict snapshot without reading identifiers, media, credentials or network methods', () => {
   const { app } = fixture();
   const report = getReport(app, { now, memoryUsage });

@@ -1,5 +1,5 @@
 'use strict';
-// Original, code-drawn frame illustrations. No user photo or brand artwork.
+// Original app illustrations. Driver product photos are maintained separately.
 const fs = require('node:fs');
 const path = require('node:path');
 const zlib = require('node:zlib');
@@ -35,6 +35,5 @@ function scene(x, y, driver) {
 }
 for (const [file, width, height, driver] of [
   ['assets/images/small.png',250,175,false], ['assets/images/large.png',500,350,false],
-  ['drivers/frameo/assets/images/small.png',75,75,true], ['drivers/frameo/assets/images/large.png',500,500,true],
 ]) { const filename = path.join(app,file); fs.mkdirSync(path.dirname(filename),{recursive:true}); fs.writeFileSync(filename,png(width,height,(x,y)=>scene(x,y,driver))); }
 console.log('Original frame illustrations generated.');

@@ -111,7 +111,7 @@ function fixture({ probeError, onSend, onTrigger, packagedEngine = false } = {})
 }
 
 test('an unsupported runtime stays inspectable and rejects pairing with its own message', {
-  skip: process.platform === 'linux' && process.arch === 'arm64',
+  skip: process.platform === 'linux' && ['arm64', 'x64'].includes(process.arch),
 }, async t => {
   const f = fixture({ packagedEngine: true });
   t.after(() => f.app.onUninit());

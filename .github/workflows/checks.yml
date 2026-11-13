@@ -23,13 +23,39 @@ jobs:
       - name: Offline native adapter and protocol checks
         working-directory: vendor/unframeo
         run: go test ./cmd/homey-frameo ./internal/config ./internal/frameo ./internal/mdns ./internal/sdg
-      - name: Build embedded Homey engine
+      - name: Build embedded ARM64 engine
         working-directory: vendor/unframeo
         env:
           CGO_ENABLED: '0'
           GOOS: linux
           GOARCH: arm64
         run: go build -trimpath -buildvcs=false -ldflags='-s -w' -o ../../app/bin/homey-frameo-linux-arm64 ./cmd/homey-frameo
+      - name: Build embedded AMD64 engine
+        working-directory: vendor/unframeo
+        env:
+          CGO_ENABLED: '0'
+          GOOS: linux
+          GOARCH: amd64
+        run: go build -trimpath -buildvcs=false -ldflags='-s -w' -o ../../app/bin/homey-frameo-linux-amd64 ./cmd/homey-frameo
+      - name: Check AMD64 startup without contacting a frame
+        run: |
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const fs = require('node:fs');
+          const { createHash } = require('node:crypto');
+          const { execFileSync } = require('node:child_process');
+          const { binaries } = require('./app/licenses/PROVENANCE.json');
+          for (const binary of binaries) {
+            const actual = createHash('sha256').update(fs.readFileSync('app/' + binary.path)).digest('hex');
+            assert.equal(actual, binary.sha256);
+          }
+          const response = JSON.parse(execFileSync('app/bin/homey-frameo-linux-amd64', [], {
+            input: JSON.stringify({ operation: 'probe' }), encoding: 'utf8', timeout: 5000,
+          }));
+          assert.equal(response.ok, true);
+          assert.equal(response.result.goos, 'linux');
+          assert.equal(response.result.goarch, 'amd64');
+          NODE
       - uses: actions/setup-node@v4
         with:
           node-version: '24'

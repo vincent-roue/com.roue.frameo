@@ -1,4 +1,10 @@
 {
+  "0.14.1": {
+    "en": "Added support for Linux AMD64 on Homey Self-Hosted Server and automatic engine selection. Updated widget previews and the photo frame image for the App Store.",
+    "fr": "Ajout de la prise en charge Linux AMD64 pour Homey Self-Hosted Server et de la sélection automatique du moteur. Mise à jour des aperçus des widgets et de la photo du cadre pour la boutique.",
+    "nl": "Ondersteuning voor Linux AMD64 op Homey Self-Hosted Server en automatische motorkeuze toegevoegd. Widgetvoorbeelden en de foto van de fotolijst voor de App Store bijgewerkt.",
+    "de": "Unterstützung für Linux AMD64 auf Homey Self-Hosted Server und automatische Engine-Auswahl ergänzt. Widget-Vorschaubilder und das Foto des Bilderrahmens für den App Store aktualisiert."
+  },
   "0.14.0": {
     "en": "Choose a photo in the gallery to display it on the frame or use it in a Flow. Added captions, video thumbnails, manual crop focus, deferred delivery and a Flow for when a frame becomes reachable again.",
     "fr": "Choisissez une photo dans la galerie pour l’afficher sur le cadre ou l’utiliser dans un Flow. Ajout des légendes, des vignettes vidéo, du point de cadrage, de l’envoi différé et d’un Flow quand un cadre redevient joignable.",

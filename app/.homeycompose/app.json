@@ -1,7 +1,7 @@
 {
   "id": "com.roue.frameo",
-  "version": "0.14.0",
-  "source": "https://github.com/vincent-roue/com.roue.frameo/tree/v0.14.0",
+  "version": "0.14.1",
+  "source": "https://github.com/vincent-roue/com.roue.frameo/tree/v0.14.1",
   "homeyCommunityTopicId": 161844,
   "compatibility": ">=12.9.0",
   "sdk": 3,

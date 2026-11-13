@@ -1,10 +1,22 @@
 {
-  "version": "0.14.0",
-  "platform": "linux/arm64",
-  "sha256": "174d807792fccc5c2dcaa512d04430fc7a8500daebbbba39d7d507f3ebf7ad3d",
+  "version": "0.14.1",
   "toolchain": "go1.27.3",
-  "basis": "The bundled engine ran on Homey Pro (2023) with a Pexar PX-110. External tests confirmed a video still, a caption, a photo receipt with custom crop parameters and accepted display requests. The visible crop and awake-screen photo change remain to be verified. An observed display request during standby did not wake this frame.",
-  "candidateChecks": "Homey publish-level package validation, JavaScript tests and native Go tests using simulated frames on Windows.",
-  "windowsTestExceptions": ["TestCreateMakesAnIdentity (POSIX permissions)", "TestDialKeepsPinging (50 ms fake-grid RTT threshold)"],
-  "rebuiltForCandidate": true
+  "binaries": [
+    {
+      "platform": "linux/arm64",
+      "path": "bin/homey-frameo-linux-arm64",
+      "sha256": "174d807792fccc5c2dcaa512d04430fc7a8500daebbbba39d7d507f3ebf7ad3d"
+    },
+    {
+      "platform": "linux/amd64",
+      "path": "bin/homey-frameo-linux-amd64",
+      "sha256": "56eb45b5283707c7e07e5f6452bc402e3478eeae6e5957df6b7bd5d0ed61b2d8"
+    }
+  ],
+  "basis": "The unchanged ARM64 engine was previously exercised on Homey Pro (2023) with a Pexar PX-110. The Linux AMD64 build uses the same source with CGO disabled. An actual Linux AMD64 startup check runs in GitHub Actions. A complete frame session on Homey Self-Hosted Server remains untested.",
+  "candidateChecks": "Homey publish-level package validation, JavaScript runtime-selection tests and native Go protocol tests.",
+  "windowsTestExceptions": [
+    "TestCreateMakesAnIdentity (POSIX permissions)",
+    "TestDialKeepsPinging (50 ms fake-grid RTT threshold)"
+  ]
 }

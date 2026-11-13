@@ -4,3 +4,10 @@ The app icon uses the official Frameo hands symbol, extracted from the official 
 Sources: https://www.frameo.com/assets/img/logo.svg and the official Frameo help article “How to Connect Phone to a Frame”.
 
 QR decoding uses jsQR 1.4.0, Copyright 2017 Cozmo Inc., Apache License 2.0. The full notice is included in drivers/frameo/pair/vendor/jsQR.LICENSE.txt. The decoder is bundled and does not contact a CDN or upload a QR photograph.
+
+The driver images use the front view from the official Pexar PX-110 product photograph. Preparation selects the front frame, removes the connected white background and resizes it to Homey's driver sizes. Retained product pixels come from the manufacturer photograph.
+Product page: https://pexar.com/products/11-inch-digital-picture-frame
+Image source: https://pexar.com/cdn/shop/files/11_Black.webp?v=1793113891&width=1600
+The photograph remains the property of Pexar. The source-code GPL does not relicense the photograph.
+
+The six light and dark widget previews are original geometric illustrations with a transparent canvas and no text or brand artwork.

@@ -71,7 +71,7 @@
     "code_expired": "Dieser Code wurde nicht angenommen. Erstelle auf dem Bilderrahmen einen neuen Code.",
     "frame_unavailable": "Der Bilderrahmen ist nicht erreichbar. Prüfe die Stromversorgung und die Netzwerkverbindung.",
     "not_ready": "Frameo wird gestartet. Versuche es gleich noch einmal.",
-    "unsupported_runtime": "Diese Frameo-Version benötigt Linux ARM64, wie beim Homey Pro (2023).",
+    "unsupported_runtime": "Diese Frameo-Version benötigt Linux ARM64 oder AMD64. Sie wurde auf Homey Pro (2023) getestet.",
     "timeout": "Der Bilderrahmen hat nicht rechtzeitig geantwortet. Versuche es erneut.",
     "busy": "Ein anderer Vorgang läuft bereits. Warte, bis er abgeschlossen ist.",
     "session_closed": "Das Fenster wurde geschlossen. Beginne erneut mit dem Hinzufügen des Bilderrahmens.",

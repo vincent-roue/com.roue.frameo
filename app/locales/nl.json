@@ -71,7 +71,7 @@
     "code_expired": "Deze code is niet geaccepteerd. Maak een nieuwe code aan op de fotolijst.",
     "frame_unavailable": "De fotolijst is niet bereikbaar. Controleer de stroomvoorziening en de netwerkverbinding.",
     "not_ready": "Frameo wordt opgestart. Probeer het zo nog eens.",
-    "unsupported_runtime": "Deze versie van Frameo vereist Linux ARM64, zoals op Homey Pro (2023).",
+    "unsupported_runtime": "Deze versie van Frameo vereist Linux ARM64 of AMD64. Ze is getest op Homey Pro (2023).",
     "timeout": "De fotolijst heeft niet op tijd gereageerd. Probeer het opnieuw.",
     "busy": "Er wordt al een bewerking uitgevoerd. Wacht tot deze klaar is.",
     "session_closed": "Het venster is gesloten. Begin opnieuw met het toevoegen van de fotolijst.",

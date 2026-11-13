@@ -127,7 +127,7 @@
         family: choice(null, 'unframeo', 'unframeo-go', 'homey-frameo', 'frameo-go'),
         protocolVersion: integer,
         os: choice(null, 'linux', 'darwin', 'win32'),
-        architecture: choice(null, 'arm64', 'x64', 'arm', 'ia32'),
+        architecture: choice(null, 'arm64', 'amd64', 'x64', 'arm', 'ia32'),
       }),
     }),
     runtime: object({
